@@ -32,13 +32,13 @@ export function Navbar() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
         className={cn(
-          'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
+          'fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-transparent',
           scrolled
             ? 'bg-[var(--background)]/80 backdrop-blur-xl border-b border-[var(--border)] shadow-xl shadow-black/20'
             : 'bg-transparent'
         )}
       >
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-12 flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] flex items-center justify-center shadow-[0_0_14px_var(--primary)]/40 group-hover:shadow-[0_0_20px_var(--primary)]/60 transition-shadow">
