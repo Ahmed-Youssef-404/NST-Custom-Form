@@ -5,19 +5,22 @@ import { HomePage } from './pages/HomePage';
 import { SurveyPage } from './pages/SurveyPage';
 import { SummaryPage } from './pages/SummaryPage';
 import { DonePage } from './pages/DonePage';
+import ScrolToTop from '@/components/common/ScrollToTop';
 
 export default function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route element={<RootLayout />}>
-          <Route index element={<HomePage />} />
-          <Route path="/survey/:sectionId" element={<SurveyPage />} />
-          <Route path="/summary" element={<SummaryPage />} />
-          <Route path="/done" element={<DonePage />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Route>
-      </Routes>
+      <ScrolToTop>
+        <Routes>
+          <Route element={<RootLayout />}>
+            <Route index element={<HomePage />} />
+            <Route path="/survey/:sectionId" element={<SurveyPage />} />
+            <Route path="/summary" element={<SummaryPage />} />
+            <Route path="/done" element={<DonePage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Route>
+        </Routes>
+      </ScrolToTop>
     </BrowserRouter>
   );
 }
