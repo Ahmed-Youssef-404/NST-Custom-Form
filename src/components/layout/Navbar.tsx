@@ -3,17 +3,23 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Menu, X, Zap } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { useProgress } from '@/hooks/useProgress';
 
-const navLinks = [
-  { label: 'Home', to: '/' },
-  { label: 'Survey', to: '/survey/personal' },
-  { label: 'Summary', to: '/summary' },
-];
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const { sections } = useProgress();
+
+  const firstSection = sections[0].route;
+
+  const navLinks = [
+    { label: 'Home', to: '/' },
+    { label: 'Survey', to: `${firstSection}` },
+    { label: 'Summary', to: '/summary' },
+  ];
+
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 12);
@@ -53,7 +59,7 @@ export function Navbar() {
           <nav className="hidden sm:flex items-center gap-1">
             {navLinks.map((link) => {
               const isActive = location.pathname === link.to ||
-                (link.to === '/survey/personal' && location.pathname.startsWith('/survey'));
+                (link.to === `/${firstSection}` && location.pathname.startsWith('/survey'));
               return (
                 <Link
                   key={link.to}
