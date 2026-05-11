@@ -127,7 +127,7 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 0.875rem;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
-  display: block;
+  /* display: block; */
 }
 
 .field-input::placeholder {
