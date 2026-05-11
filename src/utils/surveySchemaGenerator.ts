@@ -70,6 +70,11 @@ function generateFieldSchema(field: Field): z.ZodTypeAny {
       return (baseSchema as z.ZodArray<z.ZodString>).min(1, 'Please select at least one option');
     } else if (field.type === 'tag-input') {
       return (baseSchema as z.ZodArray<z.ZodString>).min(1, 'Please add at least one skill');
+    } else if (field.type === 'rating') {
+      return baseSchema.refine(
+        (val) => val !== undefined && val !== null,
+        { message: `${field.label} is required` }
+      );
     } else {
       return baseSchema.refine(
         (val) => val !== undefined && val !== null && val !== '',
@@ -78,29 +83,32 @@ function generateFieldSchema(field: Field): z.ZodTypeAny {
     }
   } else {
     // ========== الحقول الاختيارية: validation شرطي ==========
-    // لو القيمة فاضية (undefined, null, empty string, empty array) → يعدي
-    // لو القيمة فيها حاجة → يتطبق الـ validation
+    // نستخدم superRefine عشان نتحقق بس لو القيمة موجودة
     
     if (field.type === 'checkbox' && field.options) {
-      // checkbox array: لو فاضي يعدي، لو فيه حاجة يتأكد إنها array
+      // checkbox array: لو فاضي أو undefined يعدي، لو فيه حاجة يتأكد إنها array صحيحة
       return z.preprocess(
         (val) => {
-          if (Array.isArray(val) && val.length === 0) return undefined;
+          if (!val || (Array.isArray(val) && val.length === 0)) return undefined;
           return val;
         },
         (baseSchema as z.ZodArray<z.ZodString>).optional()
       );
-    } else if (field.type === 'tag-input') {
+    } 
+    
+    else if (field.type === 'tag-input') {
       // tag-input: لو فاضي يعدي، لو فيه tags يتأكد من maxTags
       return z.preprocess(
         (val) => {
-          if (Array.isArray(val) && val.length === 0) return undefined;
+          if (!val || (Array.isArray(val) && val.length === 0)) return undefined;
           return val;
         },
         (baseSchema as z.ZodArray<z.ZodString>).optional()
       );
-    } else if (field.type === 'rating') {
-      // rating: لو undefined يعدي، لو رقم يتأكد من min/max
+    } 
+    
+    else if (field.type === 'rating') {
+      // rating: لو undefined أو null يعدي، لو رقم يتأكد من min/max
       return z.preprocess(
         (val) => {
           if (val === undefined || val === null) return undefined;
@@ -108,14 +116,36 @@ function generateFieldSchema(field: Field): z.ZodTypeAny {
         },
         (baseSchema as z.ZodNumber).optional()
       );
-    } else {
-      // للنصوص والإيميل والفون: لو فاضي (empty string) يعدي، لو فيه نص يتطبق validation
+    }
+    
+    else if (field.type === 'radio' || field.type === 'dropdown') {
+      // radio أو dropdown: لو undefined أو string فاضي يعدي
       return z.preprocess(
         (val) => {
-          // لو القيمة string فاضية حولها لـ undefined عشان تتخطى validation
-          if (typeof val === 'string' && val.trim() === '') {
-            return undefined;
-          }
+          if (val === undefined || val === null || val === '') return undefined;
+          return val;
+        },
+        (baseSchema as z.ZodString).optional()
+      );
+    }
+    
+    else if (field.type === 'checkbox' && !field.options) {
+      // checkbox واحد (boolean): لو undefined يعدي، لو false أو true يتأكد إنها boolean
+      return z.preprocess(
+        (val) => {
+          if (val === undefined || val === null) return undefined;
+          return val;
+        },
+        (baseSchema as z.ZodBoolean).optional()
+      );
+    }
+    
+    else {
+      // للنصوص والإيميل والفون: لو فاضي (empty string) يعدي
+      return z.preprocess(
+        (val) => {
+          if (typeof val === 'string' && val.trim() === '') return undefined;
+          if (val === undefined || val === null) return undefined;
           return val;
         },
         baseSchema.optional()
