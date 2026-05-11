@@ -299,7 +299,7 @@ export function HeroSection() {
         >
           {[
             { value: `${totalSections}`, label: 'Modules' },
-            { value: '5 Min', label: 'Estemated Time' },
+            { value: '10 Min', label: 'Estemated Time' },
             // { value: 'Secure', label: 'Data Protocol' },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
