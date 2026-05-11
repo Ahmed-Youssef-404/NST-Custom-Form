@@ -260,8 +260,8 @@ export function HeroSection() {
           variants={itemVariants}
           className="text-lg text-gray-400 leading-relaxed max-w-xl mx-auto mb-12 font-light"
         >
-          Want to level up you programming skills?
-          Join our journey in less than <span className="text-white font-medium">5 minutes</span>.
+          Whenever it's dark, It's our time to shine
+          {/* Join our journey in less than <span className="text-white font-medium">5 minutes</span>. */}
         </motion.p>
 
         <motion.div variants={itemVariants}>
@@ -275,7 +275,7 @@ export function HeroSection() {
               boxShadow: '0 0 20px rgba(59, 130, 246, 0.3)',
             }}
           >
-            <span>Launch Survey</span>
+            <span>Let's Start</span>
             <motion.span
               className="group-hover:translate-x-1 transition-transform duration-200"
             >

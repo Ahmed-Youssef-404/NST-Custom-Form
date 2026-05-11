@@ -1,4 +1,4 @@
-import { Zap } from 'lucide-react';
+import { AstroidIcon } from 'lucide-react';
 
 export function Footer() {
   return (
@@ -16,10 +16,10 @@ export function Footer() {
         {/* Logo mark */}
         <div className="flex items-center gap-2">
           <div className="w-5 h-5 rounded-md bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] flex items-center justify-center">
-            <Zap size={10} className="text-white fill-white" />
+            <AstroidIcon size={14} className="text-white fill-white" />
           </div>
           <span className="text-xs font-semibold text-[var(--foreground)]">
-            Pulse<span className="text-[var(--primary)]">Survey</span>
+            <span className="text-[var(--primary)]">NST</span>
           </span>
         </div>
 

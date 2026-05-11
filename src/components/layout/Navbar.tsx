@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Menu, X, Zap } from 'lucide-react';
+import { AstroidIcon, Menu, X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 // import { useProgress } from '@/hooks/useProgress';
 import { surveySections } from '@/config/surveySections';
@@ -49,10 +49,10 @@ export function Navbar() {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] flex items-center justify-center shadow-[0_0_14px_var(--primary)]/40 group-hover:shadow-[0_0_20px_var(--primary)]/60 transition-shadow">
-              <Zap size={14} className="text-white fill-white" />
+              <AstroidIcon size={14} className="text-white fill-white" />
             </div>
             <span className="font-bold text-sm tracking-wide text-[var(--foreground)]">
-              Pulse<span className="text-[var(--primary)]">Survey</span>
+              <span className="text-[var(--primary)]">NST</span>
             </span>
           </Link>
 
