@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import type { SurveySection } from '../../types/survey';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
   sections: SurveySection[];
@@ -12,6 +13,12 @@ interface Props {
 }
 
 export function StepIndicator({ sections, currentIndex, completedIds, onStepClick }: Props) {
+  const navigate = useNavigate();
+
+  const handleClick = (index: number) => {
+      navigate(sections[index].route);
+  };
+
   return (
     <div className="flex items-center justify-center gap-0 mb-10">
       {sections.map((section, idx) => {
@@ -19,13 +26,14 @@ export function StepIndicator({ sections, currentIndex, completedIds, onStepClic
         const isCurrent = idx === currentIndex;
         const isClickable = isCompleted && onStepClick;
 
+        console.log(isClickable)
         return (
           <React.Fragment key={section.id}>
             {/* Step circle */}
             <button
               type="button"
-              onClick={() => isClickable && onStepClick(idx)}
-              disabled={!isClickable}
+              onClick={() => handleClick(idx)}
+              disabled={!isCompleted}
               className={cn(
                 'flex flex-col items-center gap-1.5 group',
                 isClickable && 'cursor-pointer'
@@ -38,10 +46,10 @@ export function StepIndicator({ sections, currentIndex, completedIds, onStepClic
                   isCompleted
                     ? 'border-[var(--primary)] bg-[var(--primary)] text-white shadow-[0_0_16px_var(--primary)]/40'
                     : isCurrent
-                    ? 'border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)] shadow-[0_0_20px_var(--primary)]/20'
-                    : 'border-[var(--border)] bg-[var(--surface)] text-[var(--muted)]'
+                      ? 'border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)] shadow-[0_0_20px_var(--primary)]/20'
+                      : 'border-[var(--border)] bg-[var(--surface)] text-[var(--muted)]'
                 )}
-                animate={isCurrent ? { scale: [1, 1.08, 1] } : { scale: 1 }}
+                animate={isCurrent ? { scale: [1.8, 2.08, 1] } : { scale: 1 }}
                 transition={{ duration: 0.6, repeat: isCurrent ? Infinity : 0, repeatDelay: 2 }}
               >
                 {isCompleted ? <Check size={15} strokeWidth={3} /> : idx + 1}
