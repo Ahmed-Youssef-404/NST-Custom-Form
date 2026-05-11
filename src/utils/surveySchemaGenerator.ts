@@ -2,213 +2,150 @@
 import { z } from 'zod';
 import type { SurveySection, Field } from '../types/survey';
 
-// دالة مساعدة لاستخراج رسالة أو قيمة من validation
-function getValidationMessageOrValue(
-  validation: any,
-  key: string,
-  defaultValue: any
-): any {
-  if (!validation) return defaultValue;
-  const rule = validation[key];
-  if (typeof rule === 'object' && rule !== null) {
-    return { value: rule.value, message: rule.message };
-  }
-  if (rule !== undefined) return rule;
-  return defaultValue;
+function getValidationMessage(field: Field, rule: string, defaultMessage: string): string {
+  const val = field.validation?.[rule as keyof typeof field.validation];
+  if (typeof val === 'string') return val;
+  if (typeof val === 'object' && val && 'message' in val) return val.message;
+  return defaultMessage;
 }
 
 function generateFieldSchema(field: Field): z.ZodTypeAny {
-  const { type, required, validation } = field;
-  const isRequired = required === true;
-  
   let baseSchema: z.ZodTypeAny;
 
-  // بناء الـ base schema حسب النوع
-  switch (type) {
+  switch (field.type) {
     case 'text':
     case 'textarea':
     case 'dropdown':
     case 'radio': {
       let stringSchema = z.string();
-      const minLength = getValidationMessageOrValue(validation, 'minLength', null);
-      if (minLength) {
-        if (typeof minLength === 'object') {
-          stringSchema = stringSchema.min(minLength.value, minLength.message);
-        } else {
-          stringSchema = stringSchema.min(minLength, `Must be at least ${minLength} characters`);
-        }
+      const minLen = field.validation?.minLength?.value ?? field.minLength;
+      if (minLen) {
+        const msg = getValidationMessage(field, 'minLength', `Must be at least ${minLen} characters`);
+        stringSchema = stringSchema.min(minLen, msg);
       }
-      const maxLength = getValidationMessageOrValue(validation, 'maxLength', null);
-      if (maxLength) {
-        if (typeof maxLength === 'object') {
-          stringSchema = stringSchema.max(maxLength.value, maxLength.message);
-        } else {
-          stringSchema = stringSchema.max(maxLength, `Must be at most ${maxLength} characters`);
-        }
+      const maxLen = field.validation?.maxLength?.value ?? field.maxLength;
+      if (maxLen) {
+        const msg = getValidationMessage(field, 'maxLength', `Must be at most ${maxLen} characters`);
+        stringSchema = stringSchema.max(maxLen, msg);
       }
       baseSchema = stringSchema;
       break;
     }
-
     case 'email': {
       let emailSchema = z.string();
-      const emailMsg = getValidationMessageOrValue(validation, 'email', null);
-      if (emailMsg) {
-        if (typeof emailMsg === 'string') {
-          emailSchema = emailSchema.email(emailMsg);
-        } else if (emailMsg === true) {
-          emailSchema = emailSchema.email('Please enter a valid email address');
-        }
-      } else {
-        emailSchema = emailSchema.email('Invalid email');
+      const minLen = field.validation?.minLength?.value ?? field.minLength;
+      if (minLen) {
+        const msg = getValidationMessage(field, 'minLength', `Must be at least ${minLen} characters`);
+        emailSchema = emailSchema.min(minLen, msg);
       }
-      const minLength = getValidationMessageOrValue(validation, 'minLength', null);
-      if (minLength) {
-        if (typeof minLength === 'object') {
-          emailSchema = emailSchema.min(minLength.value, minLength.message);
-        } else {
-          emailSchema = emailSchema.min(minLength);
-        }
+      const maxLen = field.validation?.maxLength?.value ?? field.maxLength;
+      if (maxLen) {
+        const msg = getValidationMessage(field, 'maxLength', `Must be at most ${maxLen} characters`);
+        emailSchema = emailSchema.max(maxLen, msg);
       }
+      const emailMsg = field.validation?.email || 'Please enter a valid email address';
+      emailSchema = emailSchema.email(emailMsg);
       baseSchema = emailSchema;
       break;
     }
-
     case 'phone': {
       let phoneSchema = z.string();
-      const regexRule = getValidationMessageOrValue(validation, 'regex', null);
-      if (regexRule) {
-        phoneSchema = phoneSchema.regex(regexRule.value, regexRule.message);
-      } else {
-        phoneSchema = phoneSchema.regex(/^[\+\d\s\(\)\-]+$/, 'Invalid phone number');
-      }
+      const regexVal = field.validation?.regex?.value || /^[\+\d\s\(\)\-]+$/;
+      const regexMsg = field.validation?.regex?.message || 'Invalid phone number format';
+      phoneSchema = phoneSchema.regex(regexVal, regexMsg);
+      const minLen = field.validation?.minLength?.value ?? field.minLength;
+      if (minLen) phoneSchema = phoneSchema.min(minLen, getValidationMessage(field, 'minLength', `Minimum ${minLen} digits required`));
+      const maxLen = field.validation?.maxLength?.value ?? field.maxLength;
+      if (maxLen) phoneSchema = phoneSchema.max(maxLen, getValidationMessage(field, 'maxLength', `Maximum ${maxLen} digits allowed`));
       baseSchema = phoneSchema;
       break;
     }
-
     case 'tag-input': {
       let arraySchema = z.array(z.string());
-      const maxTags = getValidationMessageOrValue(validation, 'maxTags', null);
-      if (maxTags) {
-        if (typeof maxTags === 'object') {
-          arraySchema = arraySchema.max(maxTags.value, maxTags.message);
-        } else {
-          arraySchema = arraySchema.max(maxTags, `Maximum ${maxTags} skills allowed`);
-        }
+      const maxTagsVal = field.validation?.maxTags?.value ?? field.maxTags;
+      if (maxTagsVal) {
+        const msg = getValidationMessage(field, 'maxTags', `Maximum ${maxTagsVal} skills allowed`);
+        arraySchema = arraySchema.max(maxTagsVal, msg);
+      }
+      const minTagsVal = field.validation?.minTags?.value;
+      if (minTagsVal) {
+        const msg = getValidationMessage(field, 'minTags', `Please add at least ${minTagsVal} skill`);
+        arraySchema = arraySchema.min(minTagsVal, msg);
       }
       baseSchema = arraySchema;
       break;
     }
-
     case 'checkbox': {
       if (field.options) {
         baseSchema = z.array(z.string());
+        // إذا كان مطلوباً سيتم التعامل مع min لاحقاً
       } else {
         baseSchema = z.boolean();
       }
       break;
     }
-
     case 'rating': {
-      // 🔥 اصلاح الـ rating: نبدأ بـ z.number() عادي
-      let numberSchema = z.number();
-      
-      // نجيب min و max من validation أو من field
-      const minVal = getValidationMessageOrValue(validation, 'min', field.min);
-      if (minVal !== undefined && minVal !== null) {
-        if (typeof minVal === 'object') {
-          numberSchema = numberSchema.min(minVal.value, minVal.message);
-        } else {
-          numberSchema = numberSchema.min(minVal, `Minimum rating is ${minVal}`);
-        }
+      let numberSchema = z.number().int();
+      const minVal = field.validation?.min?.value ?? field.min;
+      if (minVal !== undefined) {
+        const msg = getValidationMessage(field, 'min', `Minimum rating is ${minVal}`);
+        numberSchema = numberSchema.min(minVal, msg);
       }
-      
-      const maxVal = getValidationMessageOrValue(validation, 'max', field.max);
-      if (maxVal !== undefined && maxVal !== null) {
-        if (typeof maxVal === 'object') {
-          numberSchema = numberSchema.max(maxVal.value, maxVal.message);
-        } else {
-          numberSchema = numberSchema.max(maxVal, `Maximum rating is ${maxVal}`);
-        }
+      const maxVal = field.validation?.max?.value ?? field.max;
+      if (maxVal !== undefined) {
+        const msg = getValidationMessage(field, 'max', `Maximum rating is ${maxVal}`);
+        numberSchema = numberSchema.max(maxVal, msg);
       }
-      
-      // نجعلها int (اختياري)
-      numberSchema = numberSchema.int();
       baseSchema = numberSchema;
       break;
     }
-
     default:
       baseSchema = z.any();
   }
 
-  // ========== التعامل مع required والـ optional ==========
-  const requiredMsg = getValidationMessageOrValue(validation, 'required', null);
-  const isFieldRequired = isRequired || !!requiredMsg;
-  const finalRequiredMessage = typeof requiredMsg === 'string' ? requiredMsg : `${field.label} is required`;
-
-  // لو الحقل مطلوب
-  if (isFieldRequired) {
-    if (type === 'checkbox' && field.options) {
-      return (baseSchema as z.ZodArray<z.ZodString>).min(1, finalRequiredMessage);
-    } else if (type === 'tag-input') {
-      return (baseSchema as z.ZodArray<z.ZodString>).min(1, finalRequiredMessage);
-    } else if (type === 'rating') {
-      // 🔥 حل مشكلة الـ rating المطلوب: نستخدم refine لمنع undefined/null
-      return z.preprocess(
-        (val) => {
-          // لو القيمة undefined أو null، نرجعلها undefined (الـ refine هيمنعها)
-          if (val === undefined || val === null) return val;
-          // لو كانت string (من بعض الـ events)، نحولها لـ number
-          if (typeof val === 'string') return Number(val);
-          return val;
-        },
-        baseSchema.refine((val) => val !== undefined && val !== null, {
-          message: finalRequiredMessage,
-        })
-      );
+  // معالجة required و optional مع دعم الرسائل المخصصة
+  if (field.required) {
+    const requiredMsg = field.validation?.required || `${field.label} is required`;
+    if (field.type === 'checkbox' && field.options) {
+      baseSchema = (baseSchema as z.ZodArray<z.ZodString>).min(1, requiredMsg);
+    } else if (field.type === 'tag-input') {
+      baseSchema = (baseSchema as z.ZodArray<z.ZodString>).min(1, requiredMsg);
+    } else if (field.type === 'rating') {
+      baseSchema = baseSchema.refine((val) => val !== undefined && val !== null, { message: requiredMsg });
     } else {
-      return baseSchema.refine(
-        (val) => val !== undefined && val !== null && val !== '',
-        { message: finalRequiredMessage }
-      );
+      baseSchema = baseSchema.refine((val) => val !== undefined && val !== null && val !== '', { message: requiredMsg });
     }
-  } 
-  
-  // الحقول الاختيارية
-  else {
-    if (type === 'checkbox' && field.options) {
-      return z.preprocess(
-        (val) => (!val || (Array.isArray(val) && val.length === 0)) ? undefined : val,
+  } else {
+    // معالجة اختيارية مع الاحتفاظ بالقواعد الشرطية (كما في السابق)
+    if (field.type === 'checkbox' && field.options) {
+      baseSchema = z.preprocess(
+        (val) => (Array.isArray(val) && val.length === 0) ? undefined : val,
         baseSchema.optional()
       );
-    } else if (type === 'tag-input') {
-      return z.preprocess(
-        (val) => (!val || (Array.isArray(val) && val.length === 0)) ? undefined : val,
+    } else if (field.type === 'tag-input') {
+      baseSchema = z.preprocess(
+        (val) => (Array.isArray(val) && val.length === 0) ? undefined : val,
         baseSchema.optional()
       );
-    } else if (type === 'rating') {
-      // 🔥 الـ rating الاختياري: يسمح بـ undefined/null
-      return z.preprocess(
-        (val) => {
-          if (val === undefined || val === null) return undefined;
-          if (typeof val === 'string') return Number(val);
-          return val;
-        },
+    } else if (field.type === 'rating') {
+      baseSchema = z.preprocess(
+        (val) => (val === undefined || val === null) ? undefined : val,
         baseSchema.optional()
       );
-    } else if (type === 'radio' || type === 'dropdown') {
-      return z.preprocess(
+    } else if (field.type === 'radio' || field.type === 'dropdown') {
+      baseSchema = z.preprocess(
         (val) => (val === undefined || val === null || val === '') ? undefined : val,
         baseSchema.optional()
       );
     } else {
-      return z.preprocess(
+      baseSchema = z.preprocess(
         (val) => (typeof val === 'string' && val.trim() === '') ? undefined : val,
         baseSchema.optional()
       );
     }
   }
+
+  return baseSchema;
 }
 
 export function generateSectionSchema(section: SurveySection): z.ZodObject<any> {
