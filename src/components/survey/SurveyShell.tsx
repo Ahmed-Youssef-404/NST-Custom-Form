@@ -1,53 +1,44 @@
-import { useEffect } from 'react';
+// SurveyShell.tsx (النسخة النهائية)
+import { useEffect, useMemo } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, ChevronRight } from 'lucide-react';
-import type { ZodSchema } from 'zod';
 import type { SurveySection } from '../../types/survey';
 import { FieldRenderer } from '../fields/FieldRenderer';
 import { StepIndicator } from './StepIndicator';
-// import { AutosaveBadge } from '../common/AutosaveBadge';
 import { AnimatedPage } from '../common/AnimatedPage';
-// import { useAutosave } from '../../hooks/useAutosave';
 import { useProgress } from '../../hooks/useProgress';
 import { useSurveyStore } from '../../store/surveyStore';
 import { surveySections } from '../../config/surveySections';
+import { generateSectionSchema } from '../../utils/surveySchemaGenerator';
 
 interface Props {
   section: SurveySection;
-  schema: ZodSchema;
   onComplete: (data: Record<string, unknown>) => void;
   onBack: () => void;
 }
 
-export function SurveyShell({ section, schema, onComplete, onBack }: Props) {
+export function SurveyShell({ section, onComplete, onBack }: Props) {
   const { currentSectionIndex, completedSections, totalSections, progressPercent } = useProgress();
   const { answers } = useSurveyStore();
-  // const goToSection = useSurveyStore((s) => s.setCurrentSection);
-  const isFullyCompleted = useSurveyStore((state) => state.isFullyCompleted());
 
-  console.log(isFullyCompleted)
+  // 🎯 توليد الـ schema تلقائياً من الـ section
+  const schema = useMemo(() => generateSectionSchema(section), [section]);
 
-  // حل مشكلة الأنواع: استخدام any مؤقتاً لتجنب خطأ التوافق
   const methods = useForm<any>({
-    resolver: zodResolver(schema as any),
-    defaultValues: answers as Record<string, unknown>,
+    resolver: zodResolver(schema),
+    defaultValues: answers,
     mode: 'onChange',
   });
 
-  const { handleSubmit, reset } = methods;
+  const { handleSubmit, reset, formState: { isValid, isDirty } } = methods;
 
-  // Reset form with persisted answers on mount
+  // Reset form when section changes
   useEffect(() => {
-    reset(answers as Record<string, unknown>);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [section.id]);
+    reset(answers);
+  }, [section.id, answers, reset]);
 
-  // const watchedValues = watch();
-  // const { status } = useAutosave(watchedValues, 20);
-
-  // حل مشكلة نوع onSubmit: استخدام any لتجنب خطأ التوافق
   const onSubmit = (data: any) => {
     onComplete(data as Record<string, unknown>);
   };
@@ -55,21 +46,20 @@ export function SurveyShell({ section, schema, onComplete, onBack }: Props) {
   return (
     <div className="min-h-screen pt-24 pb-20 px-4">
       <div className="max-w-2xl mx-auto">
-        {/* Step indicator */}
+        {/* Step indicator - يتغير تلقائياً مع surveySections */}
         <StepIndicator
           sections={surveySections}
           currentIndex={currentSectionIndex}
           completedIds={completedSections}
         />
 
-        {/* Progress bar */}
+        {/* Progress bar - نسبة مئوية دقيقة */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs text-[var(--muted)] font-medium">
               Step {currentSectionIndex + 1} of {totalSections}
             </span>
             <div className="flex items-center gap-3">
-              {/* <AutosaveBadge status={status} /> */}
               <span className="text-xs text-[var(--muted)] font-medium">{progressPercent}%</span>
             </div>
           </div>
@@ -84,10 +74,9 @@ export function SurveyShell({ section, schema, onComplete, onBack }: Props) {
           </div>
         </div>
 
-        {/* Card */}
+        {/* Form Card */}
         <AnimatedPage key={section.id}>
           <div className="glass-card rounded-3xl p-8 sm:p-10">
-            {/* Section header */}
             <div className="mb-8">
               <h2 className="text-2xl sm:text-3xl font-bold text-[var(--foreground)] mb-2">
                 {section.title}
@@ -95,7 +84,6 @@ export function SurveyShell({ section, schema, onComplete, onBack }: Props) {
               <p className="text-[var(--muted)] text-sm leading-relaxed">{section.subtitle}</p>
             </div>
 
-            {/* Fields */}
             <FormProvider {...methods}>
               <form onSubmit={handleSubmit(onSubmit)} noValidate>
                 <div className="flex flex-col gap-6">
@@ -111,7 +99,6 @@ export function SurveyShell({ section, schema, onComplete, onBack }: Props) {
                   ))}
                 </div>
 
-                {/* Navigation */}
                 <div className="flex items-center justify-between mt-10 pt-6 border-t border-[var(--border)]">
                   <button
                     type="button"
@@ -128,7 +115,8 @@ export function SurveyShell({ section, schema, onComplete, onBack }: Props) {
                     type="submit"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.97 }}
-                    className="flex items-center gap-2 px-7 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-300"
+                    disabled={!isValid && isDirty}
+                    className="flex items-center gap-2 px-7 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                     style={{
                       background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
                       boxShadow: '0 0 20px var(--primary)/25',

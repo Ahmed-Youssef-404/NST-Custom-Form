@@ -3,6 +3,7 @@ import { ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useSurveyStore } from '../../store/surveyStore';
 import { useProgress } from '@/hooks/useProgress';
+import { surveySections } from '@/config/surveySections';
 
 // تصحيح الأنواع لـ TypeScript
 // const stagger: Variants = {
@@ -68,7 +69,7 @@ const starsData = generateStars(350);
 export function HeroSection() {
   const navigate = useNavigate();
   const { startSurvey } = useSurveyStore();
-  const { sections, totalSections } = useProgress();
+  const { totalSections } = useProgress();
 
   // console.log(totalSections)
 
@@ -94,8 +95,8 @@ export function HeroSection() {
   // إعادة تفعيل الـ hooks هنا
   const handleStart = () => {
     startSurvey();
-    if (sections && sections.length > 0) {
-      navigate(`${sections[0].route}`);
+    if (surveySections && surveySections.length > 0) {
+      navigate(`${surveySections[0].route}`);
     }
   };
 

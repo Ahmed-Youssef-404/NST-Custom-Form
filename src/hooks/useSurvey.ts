@@ -1,9 +1,9 @@
 import { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSurveyStore } from '../store/surveyStore';
-import { surveySections } from '../config/surveySections';
+import { sectionSchemas, surveySections } from '../config/surveySections';
 import type { SurveyAnswers } from '../types/survey';
-import { sectionSchemas } from '@/schemas/sectionSchemas';
+// import { sectionSchemas } from '@/schemas/sectionSchemas';
 import { isFormFullyCompleted } from '@/utils/surveyValidation';
 
 export function useSurvey() {
@@ -35,25 +35,18 @@ export function useSurvey() {
   const completeSection = useCallback(
     (sectionAnswers: SurveyAnswers) => {
       setAnswers(sectionAnswers);
-
-      // Check if section is valid before proceeding
       const sectionIndex = surveySections.findIndex(s => s.id === currentSection.id);
       const schema = sectionSchemas[sectionIndex];
       const isValid = schema.safeParse(sectionAnswers).success;
 
       if (!isValid) {
-        console.warn('Cannot proceed: section has missing required fields');
+        console.warn('Cannot proceed: missing required fields');
         return;
       }
 
-      // Section is valid, mark it complete
       markSectionComplete(currentSection.id, sectionAnswers);
-
-      if (isLastSection) {
-        navigate('/summary');
-      } else {
-        goToSection(currentSectionIndex + 1);
-      }
+      if (isLastSection) navigate('/summary');
+      else goToSection(currentSectionIndex + 1);
     },
     [setAnswers, markSectionComplete, currentSection, isLastSection, navigate, currentSectionIndex, goToSection]
   );

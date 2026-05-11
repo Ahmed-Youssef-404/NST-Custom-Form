@@ -1,25 +1,33 @@
+// hooks/useProgress.ts
+import { useMemo } from 'react';
 import { useSurveyStore } from '../store/surveyStore';
-import { surveySections, TOTAL_SECTIONS } from '../config/surveySections';
+import { surveySections } from '../config/surveySections';
+import { isSectionComplete } from '../utils/surveyValidation';
 
 export function useProgress() {
-  const currentSectionIndex = useSurveyStore((s) => s.currentSectionIndex);
-  const completedSections = useSurveyStore((s) => s.completedSections);
+  const { currentSectionIndex, answers } = useSurveyStore();
 
-  const currentSection = surveySections[currentSectionIndex];
-  const progressPercent = Math.round(
-    (completedSections.length / TOTAL_SECTIONS) * 100
-  );
-  const isLastSection = currentSectionIndex === TOTAL_SECTIONS - 1;
-  const isComplete = completedSections.length === TOTAL_SECTIONS;
+  const totalSections = surveySections.length;
+
+  const completedSections = useMemo(() => {
+    const completed: string[] = [];
+    for (let i = 0; i < totalSections; i++) {
+      if (isSectionComplete(i, answers)) {
+        completed.push(surveySections[i].id);
+      }
+    }
+    return completed;
+  }, [answers, totalSections]);
+
+  const progressPercent = useMemo(() => {
+    const percent = (completedSections.length / totalSections) * 100;
+    return Math.round(percent); // 👈 هنا التقريب لأقرب عدد صحيح
+  }, [completedSections.length, totalSections]);
 
   return {
     currentSectionIndex,
-    currentSection,
+    totalSections,
     completedSections,
-    totalSections: TOTAL_SECTIONS,
     progressPercent,
-    isLastSection,
-    isComplete,
-    sections: surveySections,
   };
 }

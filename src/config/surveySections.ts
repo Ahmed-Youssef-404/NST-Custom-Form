@@ -1,10 +1,12 @@
+// config/surveySections.ts
 import type { SurveySection } from '../types/survey';
+import { generateAllSchemas } from '../utils/surveySchemaGenerator';
 
 export const surveySections: SurveySection[] = [
   {
     id: 'personal',
     title: 'About You',
-    subtitle: 'Let\'s start with the basics. We keep this private.',
+    subtitle: "Let's start with the basics. We keep this private.",
     route: '/survey/personal',
     fields: [
       {
@@ -14,28 +16,31 @@ export const surveySections: SurveySection[] = [
         placeholder: 'Your full name',
         required: true,
         helperText: 'As it appears on your profile',
+        minLength: 2,
       },
       {
         id: 'email',
         label: 'Email Address',
         type: 'email',
         placeholder: 'hello@example.com',
-        required: true,
+        required: false,
       },
       {
         id: 'phone',
         label: 'Phone Number',
         type: 'phone',
         placeholder: '+1 (555) 000-0000',
-        required: false,
+        required: true,
+        minLength: 10,
       },
       {
         id: 'bio',
         label: 'Short Bio',
         type: 'textarea',
         placeholder: 'Tell us a little about yourself...',
-        required: true,
+        required: false,
         helperText: 'A brief description — 2 to 4 sentences.',
+        minLength: 20,
       },
       {
         id: 'role',
@@ -170,3 +175,6 @@ export const surveySections: SurveySection[] = [
 ];
 
 export const TOTAL_SECTIONS = surveySections.length;
+
+// Generate Zod schemas automatically from the sections
+export const sectionSchemas = generateAllSchemas(surveySections);

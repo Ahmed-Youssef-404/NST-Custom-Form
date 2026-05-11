@@ -3,16 +3,17 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Menu, X, Zap } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import { useProgress } from '@/hooks/useProgress';
+// import { useProgress } from '@/hooks/useProgress';
+import { surveySections } from '@/config/surveySections';
 
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
-  const { sections } = useProgress();
+  // const { totalSections, } = useProgress();
 
-  const firstSection = sections[0].route;
+  const firstSection = surveySections[0].route;
 
   const navLinks = [
     { label: 'Home', to: '/' },
