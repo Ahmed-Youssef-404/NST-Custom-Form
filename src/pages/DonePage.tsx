@@ -88,11 +88,17 @@ export function DonePage() {
   const navigate = useNavigate();
   const { handleReset } = useSurvey();
   const isSubmitted = useSurveyStore((s) => s.isSubmitted);
+  const isFullyCompleted = useSurveyStore((state) => state.isFullyCompleted());
+
 
   // Guard: only show this if actually submitted
   useEffect(() => {
     if (!isSubmitted) navigate('/');
   }, [isSubmitted, navigate]);
+
+  if (!isFullyCompleted) {
+    navigate('/');
+  }
 
   return (
     <AnimatedPage>

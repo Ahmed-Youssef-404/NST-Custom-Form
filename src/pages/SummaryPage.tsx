@@ -46,11 +46,19 @@ export function SummaryPage() {
   const { answers, handleSubmit, goToSection } = useSurvey();
   const isFullyCompleted = useSurveyStore((state) => state.isFullyCompleted());
 
-  // const { completedSections } = useSurveyStore();
+  const handlteFinalSubmit = () => {
+    console.log(isFullyCompleted)
+    if (!isFullyCompleted) {
+      console.log("Please fill in all")
+    } else {
+      handleSubmit();
+      navigate('/done');
+    }
+  }
 
   return (
     <AnimatedPage>
-      <div className="min-h-screen pt-24 pb-36 px-4">
+      <div className="min-h-screen pt-24 pb-12 px-4">
         <div className="max-w-2xl mx-auto">
           {/* Header */}
           <div className="mb-8">
@@ -131,16 +139,16 @@ export function SummaryPage() {
 
       {/* Sticky submit button */}
       <div
-        className="fixed bottom-0 left-0 right-0 z-40 px-4 py-4"
+        className="z-40 px-4 py-4"
         style={{ background: 'linear-gradient(to top, var(--background), transparent)' }}
       >
         <div className="max-w-2xl mx-auto">
           <motion.button
             disabled={!isFullyCompleted}
-            onClick={handleSubmit}
+            onClick={(handlteFinalSubmit)}
             whileHover={{ scale: 1.02, boxShadow: '0 0 40px var(--primary)/40' }}
             whileTap={{ scale: 0.98 }}
-            className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl text-base font-semibold text-white transition-all duration-300"
+            className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl text-base font-semibold text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             style={{
               background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
               boxShadow: '0 0 30px var(--primary)/25',
