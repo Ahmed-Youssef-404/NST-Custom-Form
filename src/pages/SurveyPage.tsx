@@ -17,7 +17,7 @@ export function SurveyPage() {
   useEffect(() => {
     const idx = surveySections.findIndex((s) => s.id === sectionId);
     if (idx === -1) {
-      navigate('/survey/personal');
+      navigate(`${surveySections[0].route}`);
       return;
     }
     setCurrentSection(idx);

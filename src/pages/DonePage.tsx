@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle2, RotateCcw, Mail, MessageSquare } from 'lucide-react';
 import { AnimatedPage } from '../components/common/AnimatedPage';
-import { useSurvey } from '../hooks/useSurvey';
 import { useSurveyStore } from '../store/surveyStore';
 import { useNavigate } from 'react-router-dom';
 
@@ -87,19 +86,19 @@ function ConfettiCanvas() {
 
 export function DonePage() {
   const navigate = useNavigate();
-  const { handleReset } = useSurvey();
   const resetSurvey = useSurveyStore((s) => s.resetSurvey);
+  const startSurvey = useSurveyStore((s) => s.startSurvey);
   const isSubmitted = useSurveyStore((s) => s.isSubmitted);
   const isFullyCompleted = useSurveyStore((state) => state.isFullyCompleted());
-  const [hasCleared, setHasCleared] = useState(false);
+  const [hasCleaned, setHasCleaned] = useState(false);
 
   // 🔥 GUARD: منع الدخول لو الفورم مش مكتمل أو مش مرسل
   useEffect(() => {
     // لو الفورم مش مكتمل ومش مرسل، نروح للهوم
-    if (!isFullyCompleted && !isSubmitted) {
-      navigate('/');
-      return;
-    }
+    // if (!isFullyCompleted && !isSubmitted) {
+    //   navigate('/');
+    //   return;
+    // }
 
     // لو الفورم مكتمل بس مش مرسل (يعني دخل يدوي)، نروح للـ summary
     if (isFullyCompleted && !isSubmitted) {
@@ -107,13 +106,15 @@ export function DonePage() {
       return;
     }
 
-    if (isFullyCompleted && isSubmitted) {
+    // ✅ هنا بننظف الـ store بس من غير ما نعمل navigate
+    if (isFullyCompleted && isSubmitted && !hasCleaned) {
+      setHasCleaned(true);
+      // ✅ نظف يدوياً من غير ما تستخدم handleReset عشان فيه navigate
       localStorage.removeItem("survey_state_v1");
-      return;
+      resetSurvey();
+      startSurvey();
     }
-
-
-  }, [isFullyCompleted, isSubmitted, navigate]);
+  }, [isFullyCompleted, isSubmitted, navigate, resetSurvey, startSurvey, hasCleaned]);
 
   // منع الرجوع للخلف (يتنفذ بس لو احنا في الصفحة صح)
   useEffect(() => {
@@ -130,23 +131,10 @@ export function DonePage() {
     };
   }, [isSubmitted, isFullyCompleted]);
 
-  // مسح الـ survey بعد ما الصفحة تظهر (مرة واحدة فقط)
-  useEffect(() => {
-    // ننضف بس لو احنا في صفحة done صح (يعني الفورم مرسل)
-    if (!hasCleared && isSubmitted) {
-      setHasCleared(true);
-      const timeoutId = setTimeout(() => {
-        resetSurvey();
-      }, 500);
-
-      return () => clearTimeout(timeoutId);
-    }
-  }, [resetSurvey, hasCleared, isSubmitted]);
-
   // لو مش مؤهل، منعرضش حاجة (الـ guard هيعمل redirect)
-  if (!isSubmitted && !isFullyCompleted) {
-    return null;
-  }
+  // if (!isSubmitted && !isFullyCompleted) {
+  //   return null;
+  // }
 
   return (
     <AnimatedPage>
@@ -210,12 +198,12 @@ export function DonePage() {
             </div>
           </motion.div>
 
-          {/* Restart */}
+          {/* Restart - هنا بس اللي نستخدم handleReset عشان يحول للـ home */}
           <motion.button
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1 }}
-            onClick={handleReset}
+            onClick={() => { navigate('/') }}
             className="flex items-center gap-2 mx-auto px-6 py-3 rounded-xl text-sm font-medium
               text-[var(--muted)] hover:text-[var(--foreground)] border border-[var(--border)]
               hover:border-[var(--primary)]/40 hover:bg-[var(--surface-2)] transition-all"
