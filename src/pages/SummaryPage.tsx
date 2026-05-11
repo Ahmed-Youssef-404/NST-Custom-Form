@@ -4,6 +4,7 @@ import { Edit2, Send, ChevronLeft } from 'lucide-react';
 import { AnimatedPage } from '../components/common/AnimatedPage';
 import { useSurvey } from '../hooks/useSurvey';
 import { surveySections } from '../config/surveySections';
+import { useSurveyStore } from '@/store/surveyStore';
 // import { useSurveyStore } from '../store/surveyStore';
 
 function formatValue(value: unknown): string {
@@ -43,6 +44,8 @@ function getReadableValue(sectionIdx: number, fieldId: string, value: unknown): 
 export function SummaryPage() {
   const navigate = useNavigate();
   const { answers, handleSubmit, goToSection } = useSurvey();
+  const isFullyCompleted = useSurveyStore((state) => state.isFullyCompleted());
+
   // const { completedSections } = useSurveyStore();
 
   return (
@@ -133,7 +136,7 @@ export function SummaryPage() {
       >
         <div className="max-w-2xl mx-auto">
           <motion.button
-            // disabled={!isCompleted}
+            disabled={!isFullyCompleted}
             onClick={handleSubmit}
             whileHover={{ scale: 1.02, boxShadow: '0 0 40px var(--primary)/40' }}
             whileTap={{ scale: 0.98 }}
@@ -144,7 +147,7 @@ export function SummaryPage() {
             }}
           >
             <Send size={18} />
-            Submit Survey
+            {isFullyCompleted ? 'Submit Survey' : 'Please complete all sections'}
           </motion.button>
         </div>
       </div>

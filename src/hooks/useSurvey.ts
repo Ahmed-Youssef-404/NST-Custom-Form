@@ -1,8 +1,10 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSurveyStore } from '../store/surveyStore';
 import { surveySections } from '../config/surveySections';
 import type { SurveyAnswers } from '../types/survey';
+import { sectionSchemas } from '@/schemas/sectionSchemas';
+import { isFormFullyCompleted } from '@/utils/surveyValidation';
 
 export function useSurvey() {
   const navigate = useNavigate();
@@ -33,7 +35,19 @@ export function useSurvey() {
   const completeSection = useCallback(
     (sectionAnswers: SurveyAnswers) => {
       setAnswers(sectionAnswers);
-      markSectionComplete(currentSection.id);
+
+      // Check if section is valid before proceeding
+      const sectionIndex = surveySections.findIndex(s => s.id === currentSection.id);
+      const schema = sectionSchemas[sectionIndex];
+      const isValid = schema.safeParse(sectionAnswers).success;
+
+      if (!isValid) {
+        console.warn('Cannot proceed: section has missing required fields');
+        return;
+      }
+
+      // Section is valid, mark it complete
+      markSectionComplete(currentSection.id, sectionAnswers);
 
       if (isLastSection) {
         navigate('/summary');
@@ -41,15 +55,7 @@ export function useSurvey() {
         goToSection(currentSectionIndex + 1);
       }
     },
-    [
-      setAnswers,
-      markSectionComplete,
-      currentSection,
-      isLastSection,
-      navigate,
-      currentSectionIndex,
-      goToSection,
-    ]
+    [setAnswers, markSectionComplete, currentSection, isLastSection, navigate, currentSectionIndex, goToSection]
   );
 
   const goBack = useCallback(() => {
@@ -74,6 +80,11 @@ export function useSurvey() {
     navigate('/');
   }, [resetSurvey, startSurvey, navigate]);
 
+  // Use the validation function we created earlier
+  const isFullyCompleted = useMemo(() => {
+    return isFormFullyCompleted(answers, surveySections.length);
+  }, [answers]);
+
   return {
     currentSection,
     currentSectionIndex,
@@ -85,5 +96,6 @@ export function useSurvey() {
     goBack,
     handleSubmit,
     handleReset,
+    isFullyCompleted
   };
 }

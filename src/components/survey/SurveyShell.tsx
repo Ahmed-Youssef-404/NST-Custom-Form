@@ -25,6 +25,9 @@ export function SurveyShell({ section, schema, onComplete, onBack }: Props) {
   const { currentSectionIndex, completedSections, totalSections, progressPercent } = useProgress();
   const { answers } = useSurveyStore();
   // const goToSection = useSurveyStore((s) => s.setCurrentSection);
+  const isFullyCompleted = useSurveyStore((state) => state.isFullyCompleted());
+
+  console.log(isFullyCompleted)
 
   // حل مشكلة الأنواع: استخدام any مؤقتاً لتجنب خطأ التوافق
   const methods = useForm<any>({
