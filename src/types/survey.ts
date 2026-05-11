@@ -14,6 +14,18 @@ export interface FieldOption {
   value: string;
 }
 
+export interface ValidationRules {
+  required?: string;    // رسالة مخصصة عند عدم وجود قيمة
+  minLength?: { value: number; message: string };
+  maxLength?: { value: number; message: string };
+  min?: { value: number; message: string };
+  max?: { value: number; message: string };
+  email?: string;       // رسالة مخصصة لصيغة الإيميل
+  regex?: { value: RegExp; message: string };
+  maxTags?: { value: number; message: string };
+  minTags?: { value: number; message: string };
+}
+
 export interface Field {
   id: string;
   label: string;
@@ -22,12 +34,13 @@ export interface Field {
   required: boolean;
   helperText?: string;
   options?: FieldOption[];
-  min?: number;        // للـ rating أو النصوص
-  max?: number;        // للـ rating أو عدد الـ tags
-  minLength?: number;  // للنصوص
+  validation?: ValidationRules;  // سيتم استخدامه لتخصيص الرسائل
+  // قد تبقى الخصائص القديمة للتوافق، لكن الأفضل استخدام validation
+  min?: number;    // للتوافق مع الكود الحالي
+  max?: number;
+  minLength?: number;
   maxLength?: number;
   maxTags?: number;
-  // يمكنك إضافة المزيد حسب الحاجة
 }
 
 export interface SurveySection {
