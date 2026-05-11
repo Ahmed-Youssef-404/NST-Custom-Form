@@ -84,6 +84,7 @@ export const useSurveyStore = create<SurveyStore>()(
         }),
 
       resetSurvey: () => {
+        localStorage.removeItem("survey_state_v1");
         set({ ...initialState });
       },
 

@@ -88,17 +88,36 @@ export function DonePage() {
   const navigate = useNavigate();
   const { handleReset } = useSurvey();
   const isSubmitted = useSurveyStore((s) => s.isSubmitted);
-  const isFullyCompleted = useSurveyStore((state) => state.isFullyCompleted());
+  // const isFullyCompleted = useSurveyStore((state) => state.isFullyCompleted());
+  const { resetSurvey, } = useSurveyStore();
 
 
-  // Guard: only show this if actually submitted
+  // Guard: فقط لو مش submitted نروح للهوم
   useEffect(() => {
-    if (!isSubmitted) navigate('/');
-  }, [isSubmitted, navigate]);
+    if (!isSubmitted) {
+      navigate('/');
+    }
+  }, []);
 
-  if (!isFullyCompleted) {
-    navigate('/');
-  }
+  // مسح الـ survey بعد ما الصفحة تظهر (مرة واحدة)
+  useEffect(() => {
+    // منع الرجوع للخلف
+    window.history.pushState(null, '', window.location.href);
+    window.onpopstate = () => {
+      window.history.pushState(null, '', window.location.href);
+    };
+
+    // مسح الـ survey بعد 200ms عشان نتأكد إن الصفحة اتحملت
+    const timeoutId = setTimeout(() => {
+      resetSurvey();
+    }, 200);
+
+    return () => {
+      clearTimeout(timeoutId);
+      window.onpopstate = null;
+    };
+  }, [resetSurvey]);
+
 
   return (
     <AnimatedPage>
