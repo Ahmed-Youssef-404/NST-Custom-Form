@@ -32,31 +32,39 @@ export function HomePage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 30 }}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-full max-w-lg px-4"
+            className="fixed bottom-4 sm:bottom-16 inset-x-0 z-40 px-2 sm:px-4 sm:w-fit"
           >
-            <div className="glass-card rounded-2xl p-4 flex items-center justify-between gap-4 shadow-2xl border border-[var(--primary)]/20">
-              <div>
-                <p className="text-sm font-semibold text-[var(--foreground)]">Unfinished survey</p>
-                <p className="text-xs text-[var(--muted)] mt-0.5">
+            <div
+              className="glass-card rounded-2xl p-4 shadow-2xl border border-[var(--primary)]/20 flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between"
+            >
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-[var(--foreground)]">
+                  Unfinished survey
+                </p>
+
+                <p className="text-xs text-[var(--muted)] mt-0.5 truncate">
                   You were on "{surveySections[currentSectionIndex]?.title}"
                 </p>
               </div>
-              <div className="flex items-center gap-2 shrink-0">
+
+              <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
                 <button
                   onClick={handleStartOver}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium
-                    text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-2)]
-                    border border-[var(--border)] transition-all"
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium
+        text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-2)]
+        border border-[var(--border)] transition-all"
                 >
                   <RotateCcw size={12} />
                   Start over
                 </button>
+
                 <button
                   onClick={handleContinue}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold text-white transition-all"
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold text-white transition-all"
                   style={{
-                    background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
-                    boxShadow: '0 0 16px var(--primary)/30',
+                    background:
+                      "linear-gradient(135deg, var(--primary), var(--secondary))",
+                    boxShadow: "0 0 16px rgb(0 0 0 / 0.15)",
                   }}
                 >
                   <Play size={12} />
