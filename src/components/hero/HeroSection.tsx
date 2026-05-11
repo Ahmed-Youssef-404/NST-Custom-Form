@@ -157,28 +157,104 @@ export function HeroSection() {
         animate="show"
         className="text-center max-w-4xl mx-auto relative z-10"
       >
-        <motion.h1
-          variants={itemVariants}
-          className="text-4xl sm:text-6xl font-mono font-medium uppercase tracking-widest leading-tight mb-8 relative"
-          style={{
-            backgroundImage: 'linear-gradient(to right, #facc15 0%, #a78bfa 50%, #facc15 100%)',
-            backgroundSize: '200% auto',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-            textShadow: '0 0 15px rgba(167, 139, 250, 0.3)',
-          }}
-          animate={{
-            backgroundPosition: ['0% center', '-200% center'],
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            ease: 'linear',
-          }}
-        >
-          Northern Stars Team
-        </motion.h1>
+
+
+<motion.h1
+  variants={itemVariants}
+  className="text-4xl sm:text-6xl font-mono font-bold uppercase tracking-widest leading-tight mb-8 relative"
+  style={{
+    color: '#facc15',
+    textShadow: `
+      0px 1px 0px #ca8a04,
+      0px 2px 0px #b87a04,
+      0px 3px 0px #a66a04,
+      0px 4px 0px #945a04,
+      0px 5px 0px #824a04,
+      0px 6px 0px #703a04,
+      0px 7px 0px #5e2a04,
+      0px 8px 12px rgba(0,0,0,0.7),
+      0px 0px 25px rgba(250, 204, 21, 0.5),
+      0px 0px 50px rgba(250, 204, 21, 0.25)
+    `,
+  }}
+  animate={{
+    color: ['#facc15', '#eab308', '#ca8a04', '#eab308', '#facc15'],
+    textShadow: [
+      `
+        0px 1px 0px #ca8a04,
+        0px 2px 0px #b87a04,
+        0px 3px 0px #a66a04,
+        0px 4px 0px #945a04,
+        0px 5px 0px #824a04,
+        0px 6px 0px #703a04,
+        0px 7px 0px #5e2a04,
+        0px 8px 12px rgba(0,0,0,0.7),
+        0px 0px 25px rgba(250, 204, 21, 0.5),
+        0px 0px 50px rgba(250, 204, 21, 0.25)
+      `,
+      `
+        0px 1px 0px #b87a04,
+        0px 2px 0px #a66a04,
+        0px 3px 0px #945a04,
+        0px 4px 0px #824a04,
+        0px 5px 0px #703a04,
+        0px 6px 0px #5e2a04,
+        0px 7px 0px #4a1a04,
+        0px 8px 12px rgba(0,0,0,0.7),
+        0px 0px 30px rgba(234, 179, 8, 0.5),
+        0px 0px 55px rgba(234, 179, 8, 0.25)
+      `,
+      `
+        0px 1px 0px #a66a04,
+        0px 2px 0px #945a04,
+        0px 3px 0px #824a04,
+        0px 4px 0px #703a04,
+        0px 5px 0px #5e2a04,
+        0px 6px 0px #4a1a04,
+        0px 7px 0px #3a0e04,
+        0px 8px 12px rgba(0,0,0,0.8),
+        0px 0px 35px rgba(202, 138, 4, 0.5),
+        0px 0px 60px rgba(202, 138, 4, 0.25)
+      `,
+      `
+        0px 1px 0px #b87a04,
+        0px 2px 0px #a66a04,
+        0px 3px 0px #945a04,
+        0px 4px 0px #824a04,
+        0px 5px 0px #703a04,
+        0px 6px 0px #5e2a04,
+        0px 7px 0px #4a1a04,
+        0px 8px 12px rgba(0,0,0,0.7),
+        0px 0px 30px rgba(234, 179, 8, 0.5),
+        0px 0px 55px rgba(234, 179, 8, 0.25)
+      `,
+      `
+        0px 1px 0px #ca8a04,
+        0px 2px 0px #b87a04,
+        0px 3px 0px #a66a04,
+        0px 4px 0px #945a04,
+        0px 5px 0px #824a04,
+        0px 6px 0px #703a04,
+        0px 7px 0px #5e2a04,
+        0px 8px 12px rgba(0,0,0,0.7),
+        0px 0px 25px rgba(250, 204, 21, 0.5),
+        0px 0px 50px rgba(250, 204, 21, 0.25)
+      `,
+    ],
+  }}
+  transition={{
+    duration: 3,
+    repeat: Infinity,
+    ease: 'easeInOut',
+  }}
+>
+  Northern Stars Team
+</motion.h1>
+
+
+
+
+
 
         <motion.p
           variants={itemVariants}
@@ -195,7 +271,7 @@ export function HeroSection() {
             whileTap={{ scale: 0.97 }}
             className="group relative inline-flex items-center gap-3 px-10 py-4 rounded-full text-base font-semibold text-white overflow-hidden transition-all duration-300"
             style={{
-              background: 'linear-gradient(135deg, #3b82f6, #a78bfa)',
+              background: 'linear-gradient(135deg, #bdae1f, #e09d32)',
               boxShadow: '0 0 20px rgba(59, 130, 246, 0.3)',
             }}
           >
