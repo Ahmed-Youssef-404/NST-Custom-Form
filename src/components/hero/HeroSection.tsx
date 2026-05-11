@@ -70,7 +70,7 @@ export function HeroSection() {
   const { startSurvey } = useSurveyStore();
   const { sections, totalSections } = useProgress();
 
-  console.log(totalSections)
+  // console.log(totalSections)
 
 
   const mouseX = useMotionValue(0);
