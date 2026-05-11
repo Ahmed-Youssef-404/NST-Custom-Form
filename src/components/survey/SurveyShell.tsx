@@ -42,7 +42,7 @@ export function SurveyShell({ section, schema, onComplete, onBack }: Props) {
   }, [section.id]);
 
   const watchedValues = watch();
-  const { status } = useAutosave(watchedValues, 2000);
+  const { status } = useAutosave(watchedValues, 20);
 
   // حل مشكلة نوع onSubmit: استخدام any لتجنب خطأ التوافق
   const onSubmit = (data: any) => {
@@ -66,7 +66,7 @@ export function SurveyShell({ section, schema, onComplete, onBack }: Props) {
               Step {currentSectionIndex + 1} of {totalSections}
             </span>
             <div className="flex items-center gap-3">
-              <AutosaveBadge status={status} />
+              {/* <AutosaveBadge status={status} /> */}
               <span className="text-xs text-[var(--muted)] font-medium">{progressPercent}%</span>
             </div>
           </div>
