@@ -23,7 +23,7 @@ export const surveySections: SurveySection[] = [
         label: 'Email Address',
         type: 'email',
         placeholder: 'hello@example.com',
-        required: false,
+        required: true,
       },
       {
         id: 'phone',
