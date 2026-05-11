@@ -2,11 +2,11 @@ import React, { useState, useRef } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus } from 'lucide-react';
-import type { SurveyField } from '../../types/survey';
+import type { Field } from '../../types/survey';
 import { cn } from '../../lib/utils';
 
 interface Props {
-  field: SurveyField;
+  field: Field;
 }
 
 export function TagInputField({ field }: Props) {

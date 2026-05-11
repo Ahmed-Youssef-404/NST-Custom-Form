@@ -1,10 +1,10 @@
 import React, { useRef, useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
-import type { SurveyField } from '../../types/survey';
+import type { Field } from '../../types/survey';
 import { cn } from '../../lib/utils';
 
 interface Props {
-  field: SurveyField;
+  field: Field;
 }
 
 export function TextAreaField({ field }: Props) {

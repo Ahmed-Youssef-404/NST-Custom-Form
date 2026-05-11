@@ -1,11 +1,11 @@
 import { useFormContext } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
-import type { SurveyField } from '../../types/survey';
+import type { Field } from '../../types/survey';
 import { cn } from '../../lib/utils';
 
 interface Props {
-  field: SurveyField;
+  field: Field;
 }
 
 export function CheckboxField({ field }: Props) {

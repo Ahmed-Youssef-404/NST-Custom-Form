@@ -1,5 +1,5 @@
 import React from 'react';
-import type { SurveyField, FieldType } from '../../types/survey';
+import type { Field, FieldType } from '../../types/survey';
 import { TextField } from './TextField';
 import { TextAreaField } from './TextAreaField';
 import { RadioField } from './RadioField';
@@ -8,7 +8,7 @@ import { DropdownField } from './DropdownField';
 import { RatingField } from './RatingField';
 import { TagInputField } from './TagInputField';
 
-type FieldComponent = React.ComponentType<{ field: SurveyField }>;
+type FieldComponent = React.ComponentType<{ field: Field }>;
 
 const fieldRegistry: Record<FieldType, FieldComponent> = {
   text: TextField,
@@ -23,7 +23,7 @@ const fieldRegistry: Record<FieldType, FieldComponent> = {
 };
 
 interface Props {
-  field: SurveyField;
+  field: Field;
 }
 
 export function FieldRenderer({ field }: Props) {

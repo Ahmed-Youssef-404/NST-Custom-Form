@@ -14,18 +14,20 @@ export interface FieldOption {
   value: string;
 }
 
-export interface SurveyField {
+export interface Field {
   id: string;
   label: string;
   type: FieldType;
   placeholder?: string;
-  required?: boolean;
-  options?: FieldOption[];
-  min?: number;
-  max?: number;
-  maxTags?: number;
-  rows?: number;
+  required: boolean;
   helperText?: string;
+  options?: FieldOption[];
+  min?: number;        // للـ rating أو النصوص
+  max?: number;        // للـ rating أو عدد الـ tags
+  minLength?: number;  // للنصوص
+  maxLength?: number;
+  maxTags?: number;
+  // يمكنك إضافة المزيد حسب الحاجة
 }
 
 export interface SurveySection {
@@ -33,10 +35,10 @@ export interface SurveySection {
   title: string;
   subtitle: string;
   route: string;
-  fields: SurveyField[];
+  fields: Field[];
 }
 
-export type SurveyAnswers = Record<string, unknown>;
+export type SurveyAnswers = Record<string, any>;
 
 export interface SurveyState {
   answers: SurveyAnswers;
