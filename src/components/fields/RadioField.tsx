@@ -11,10 +11,20 @@ export function RadioField({ field }: Props) {
   const {
     register,
     watch,
+    setValue,
     formState: { errors },
   } = useFormContext();
   const selected = watch(field.id);
   const error = errors[field.id]?.message as string | undefined;
+
+  const handleSelect = (value: string) => {
+    // لو نفس القيمة المختارة، نلغى الاختيار (نحط undefined)
+    if (selected === value) {
+      setValue(field.id, undefined, { shouldValidate: true, shouldDirty: true });
+    } else {
+      setValue(field.id, value, { shouldValidate: true, shouldDirty: true });
+    }
+  };
 
   return (
     <div className="field-wrapper">
@@ -42,14 +52,17 @@ export function RadioField({ field }: Props) {
                 )}
               >
                 <input
+                  onClick={() => handleSelect(option.value)}
                   type="radio"
                   value={option.value}
                   className="sr-only"
                   {...register(field.id)}
+                  onChange={() => {}} // منع default behavior
                 />
                 <div
+                  
                   className={cn(
-                    'w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-200',
+                    'w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-200 cursor-pointer',
                     isSelected
                       ? 'border-[var(--primary)] bg-[var(--primary)]'
                       : 'border-[var(--muted)]'
@@ -63,8 +76,9 @@ export function RadioField({ field }: Props) {
                   )}
                 </div>
                 <span
+                  onClick={() => handleSelect(option.value)}
                   className={cn(
-                    'text-sm font-medium transition-colors duration-200',
+                    'text-sm font-medium transition-colors duration-200 cursor-pointer',
                     isSelected ? 'text-[var(--foreground)]' : 'text-[var(--muted)]'
                   )}
                 >

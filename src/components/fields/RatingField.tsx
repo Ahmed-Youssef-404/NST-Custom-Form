@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { motion } from 'framer-motion';
+import { X } from 'lucide-react';
 import type { Field } from '../../types/survey';
 import { cn } from '../../lib/utils';
 
@@ -32,16 +33,40 @@ export function RatingField({ field }: Props) {
     return 'var(--rating-high)';
   };
 
+  const handleSelect = (num: number) => {
+    // لو نفس الرقم المختار، نلغى الاختيار
+    if (selected === num) {
+      setValue(field.id, undefined, { shouldValidate: true, shouldDirty: true });
+    } else {
+      setValue(field.id, num, { shouldValidate: true, shouldDirty: true });
+    }
+  };
+
+  const clearSelection = () => {
+    setValue(field.id, undefined, { shouldValidate: true, shouldDirty: true });
+  };
+
   return (
     <div className="field-wrapper">
-      <label className="field-label">
-        {field.label}
-        {field.required && <span className="text-[var(--accent)] ml-1">*</span>}
-      </label>
+      <div className="flex items-center justify-between">
+        <label className="field-label">
+          {field.label}
+          {field.required && <span className="text-[var(--accent)] ml-1">*</span>}
+        </label>
+        {selected && !field.required && (
+          <button
+            type="button"
+            onClick={clearSelection}
+            className="flex items-center gap-1 text-xs text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+          >
+            <X size={12} />
+            Clear
+          </button>
+        )}
+      </div>
       {field.helperText && <p className="field-helper">{field.helperText}</p>}
 
       <div className="mt-3">
-        {/* 2 rows: 1-5 and 6-10 */}
         <div className="flex flex-col gap-2">
           {[RATINGS.slice(0, 5), RATINGS.slice(5)].map((row, rowIdx) => (
             <div key={rowIdx} className="flex gap-2">
@@ -54,9 +79,7 @@ export function RatingField({ field }: Props) {
                     type="button"
                     whileHover={{ scale: 1.08 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() =>
-                      setValue(field.id, num, { shouldValidate: true, shouldDirty: true })
-                    }
+                    onClick={() => handleSelect(num)}
                     onMouseEnter={() => setHovered(num)}
                     onMouseLeave={() => setHovered(null)}
                     className={cn(
@@ -84,7 +107,6 @@ export function RatingField({ field }: Props) {
           ))}
         </div>
 
-        {/* Label */}
         <div className="flex justify-between mt-2 text-xs text-[var(--muted)]">
           <span>Not satisfied</span>
           {active > 0 && (

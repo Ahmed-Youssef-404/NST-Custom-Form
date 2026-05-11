@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Check } from 'lucide-react';
+import { ChevronDown, Check, X } from 'lucide-react';
 import type { Field } from '../../types/survey';
 import { cn } from '../../lib/utils';
 
@@ -23,6 +23,11 @@ export function DropdownField({ field }: Props) {
     setOpen(false);
   };
 
+  const clearSelection = () => {
+    setValue(field.id, undefined, { shouldValidate: true, shouldDirty: true });
+    setOpen(false);
+  };
+
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
@@ -40,56 +45,84 @@ export function DropdownField({ field }: Props) {
         {field.required && <span className="text-[var(--accent)] ml-1">*</span>}
       </label>
       {field.helperText && <p className="field-helper">{field.helperText}</p>}
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className={cn(
-          'field-input flex items-center justify-between text-left w-full',
-          !selected && 'text-[var(--muted)]',
-          error && 'border-red-500/60',
-          open && 'border-[var(--primary)]/60 ring-2 ring-[var(--primary)]/20'
-        )}
-        aria-expanded={open}
-        aria-haspopup="listbox"
-      >
-        <span>{selectedLabel ?? field.placeholder ?? 'Select an option'}</span>
-        <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
-          <ChevronDown size={16} className="text-[var(--muted)]" />
-        </motion.span>
-      </button>
+      
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          className={cn(
+            'field-input flex items-center justify-between text-left w-full',
+            !selected && 'text-[var(--muted)]',
+            error && 'border-red-500/60',
+            open && 'border-[var(--primary)]/60 ring-2 ring-[var(--primary)]/20'
+          )}
+          aria-expanded={open}
+          aria-haspopup="listbox"
+        >
+          <span>{selectedLabel ?? field.placeholder ?? 'Select an option'}</span>
+          <div className="flex items-center gap-1">
+            {selected && !field.required && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  clearSelection();
+                }}
+                className="p-1 hover:bg-[var(--surface-2)] rounded-full transition-colors"
+                aria-label="Clear selection"
+              >
+                <X size={14} className="text-[var(--muted)] hover:text-[var(--foreground)]" />
+              </button>
+            )}
+            <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
+              <ChevronDown size={16} className="text-[var(--muted)]" />
+            </motion.span>
+          </div>
+        </button>
 
-      <AnimatePresence>
-        {open && (
-          <motion.ul
-            role="listbox"
-            initial={{ opacity: 0, y: -6, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -6, scale: 0.98 }}
-            transition={{ duration: 0.15 }}
-            className="absolute z-50 mt-1 w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] shadow-2xl overflow-hidden"
-          >
-            {field.options?.map((option) => {
-              const isSelected = selected === option.value;
-              return (
+        <AnimatePresence>
+          {open && (
+            <motion.ul
+              role="listbox"
+              initial={{ opacity: 0, y: -6, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -6, scale: 0.98 }}
+              transition={{ duration: 0.15 }}
+              className="absolute z-50 mt-1 w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] shadow-2xl overflow-hidden"
+            >
+              {/* خيار إلغاء الاختيار (يظهر بس لو الحقل مش required) */}
+              {!field.required && selected && (
                 <li
-                  key={option.value}
-                  role="option"
-                  aria-selected={isSelected}
-                  onClick={() => select(option.value)}
-                  className={cn(
-                    'flex items-center justify-between px-4 py-2.5 text-sm cursor-pointer transition-colors duration-150',
-                    'hover:bg-[var(--surface-2)]',
-                    isSelected && 'text-[var(--primary)]'
-                  )}
+                  onClick={clearSelection}
+                  className="flex items-center gap-2 px-4 py-2.5 text-sm cursor-pointer transition-colors duration-150 hover:bg-[var(--surface-2)] text-[var(--muted)] border-b border-[var(--border)]"
                 >
-                  {option.label}
-                  {isSelected && <Check size={14} />}
+                  <X size={14} />
+                  Clear selection
                 </li>
-              );
-            })}
-          </motion.ul>
-        )}
-      </AnimatePresence>
+              )}
+              {field.options?.map((option) => {
+                const isSelected = selected === option.value;
+                return (
+                  <li
+                    key={option.value}
+                    role="option"
+                    aria-selected={isSelected}
+                    onClick={() => select(option.value)}
+                    className={cn(
+                      'flex items-center justify-between px-4 py-2.5 text-sm cursor-pointer transition-colors duration-150',
+                      'hover:bg-[var(--surface-2)]',
+                      isSelected && 'text-[var(--primary)]'
+                    )}
+                  >
+                    {option.label}
+                    {isSelected && <Check size={14} />}
+                  </li>
+                );
+              })}
+            </motion.ul>
+          )}
+        </AnimatePresence>
+      </div>
       {error && <p className="field-error" role="alert">{error}</p>}
     </div>
   );
