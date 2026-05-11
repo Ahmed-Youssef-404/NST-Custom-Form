@@ -123,7 +123,7 @@ export function RatingField({ field }: Props) {
           <span>Extremely satisfied</span>
         </div>
       </div>
-      {error && <p className="field-error mt-1" role="alert">{error}</p>}
+      {error && <p className="field-error mt-1" role="alert">Please select a rating</p>}
     </div>
   );
 }
