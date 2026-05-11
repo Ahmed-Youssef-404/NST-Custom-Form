@@ -62,7 +62,7 @@ export function RatingField({ field }: Props) {
                     className={cn(
                       'flex-1 h-11 rounded-lg border text-sm font-semibold transition-all duration-150 relative overflow-hidden',
                       isActive
-                        ? 'text-white border-transparent'
+                        ? 'text-white border-transparent !bg-[var(--primary)]'
                         : 'text-[var(--muted)] border-[var(--border)] bg-[var(--surface)] hover:border-[var(--primary)]/40'
                     )}
                     style={
