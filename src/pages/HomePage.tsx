@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { RotateCcw, Play } from 'lucide-react';
@@ -9,7 +8,7 @@ import { AnimatedPage } from '../components/common/AnimatedPage';
 
 export function HomePage() {
   const navigate = useNavigate();
-  const { hasUnfinishedSurvey, currentSectionIndex, resetSurvey, startSurvey, answers } = useSurveyStore();
+  const { hasUnfinishedSurvey, currentSectionIndex, resetSurvey, startSurvey } = useSurveyStore();
   const unfinished = hasUnfinishedSurvey();
 
   const handleContinue = () => {

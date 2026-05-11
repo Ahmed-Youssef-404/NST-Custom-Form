@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { SurveyShell } from '../components/survey/SurveyShell';
 import { surveySections } from '../config/surveySections';
@@ -6,12 +6,11 @@ import { sectionSchemas } from '../schemas/sectionSchemas';
 import { useSurvey } from '../hooks/useSurvey';
 import { useBeforeUnload } from '../hooks/useBeforeUnload';
 import { useSurveyStore } from '../store/surveyStore';
-import { AnimatedPage } from '../components/common/AnimatedPage';
 
 export function SurveyPage() {
   const { sectionId } = useParams<{ sectionId: string }>();
   const navigate = useNavigate();
-  const { completeSection, goBack, currentSectionIndex } = useSurvey();
+  const { completeSection, goBack } = useSurvey();
   const setCurrentSection = useSurveyStore((s) => s.setCurrentSection);
   const { startedAt } = useSurveyStore();
 

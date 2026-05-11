@@ -1,6 +1,5 @@
-import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Cloud, CloudOff, Loader2 } from 'lucide-react';
+import { Cloud, Loader2 } from 'lucide-react';
 
 interface Props {
   status: 'idle' | 'saving' | 'saved';

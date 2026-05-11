@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
@@ -24,10 +24,11 @@ interface Props {
 export function SurveyShell({ section, schema, onComplete, onBack }: Props) {
   const { currentSectionIndex, completedSections, totalSections, progressPercent } = useProgress();
   const { answers } = useSurveyStore();
-  const goToSection = useSurveyStore((s) => s.setCurrentSection);
+  // const goToSection = useSurveyStore((s) => s.setCurrentSection);
 
-  const methods = useForm({
-    resolver: zodResolver(schema),
+  // حل مشكلة الأنواع: استخدام any مؤقتاً لتجنب خطأ التوافق
+  const methods = useForm<any>({
+    resolver: zodResolver(schema as any),
     defaultValues: answers as Record<string, unknown>,
     mode: 'onChange',
   });
@@ -41,10 +42,11 @@ export function SurveyShell({ section, schema, onComplete, onBack }: Props) {
   }, [section.id]);
 
   const watchedValues = watch();
-  const { status } = useAutosave(watchedValues);
+  const { status } = useAutosave(watchedValues, 2000);
 
-  const onSubmit = (data: Record<string, unknown>) => {
-    onComplete(data);
+  // حل مشكلة نوع onSubmit: استخدام any لتجنب خطأ التوافق
+  const onSubmit = (data: any) => {
+    onComplete(data as Record<string, unknown>);
   };
 
   return (

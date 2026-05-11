@@ -1,11 +1,10 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Edit2, Send, ChevronLeft } from 'lucide-react';
 import { AnimatedPage } from '../components/common/AnimatedPage';
 import { useSurvey } from '../hooks/useSurvey';
 import { surveySections } from '../config/surveySections';
-import { useSurveyStore } from '../store/surveyStore';
+// import { useSurveyStore } from '../store/surveyStore';
 
 function formatValue(value: unknown): string {
   if (value === undefined || value === null || value === '') return '—';
@@ -44,7 +43,7 @@ function getReadableValue(sectionIdx: number, fieldId: string, value: unknown): 
 export function SummaryPage() {
   const navigate = useNavigate();
   const { answers, handleSubmit, goToSection } = useSurvey();
-  const { completedSections } = useSurveyStore();
+  // const { completedSections } = useSurveyStore();
 
   return (
     <AnimatedPage>
@@ -66,7 +65,7 @@ export function SummaryPage() {
           {/* Sections */}
           <div className="flex flex-col gap-6">
             {surveySections.map((section, sectionIdx) => {
-              const isCompleted = completedSections.includes(section.id);
+              // const isCompleted = completedSections.includes(section.id);
               const sectionAnswers = section.fields
                 .map((f) => ({ ...f, rawValue: answers[f.id] }))
                 .filter((f) => f.rawValue !== undefined && f.rawValue !== '');
@@ -134,6 +133,7 @@ export function SummaryPage() {
       >
         <div className="max-w-2xl mx-auto">
           <motion.button
+            // disabled={!isCompleted}
             onClick={handleSubmit}
             whileHover={{ scale: 1.02, boxShadow: '0 0 40px var(--primary)/40' }}
             whileTap={{ scale: 0.98 }}

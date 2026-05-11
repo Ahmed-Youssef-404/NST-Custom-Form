@@ -22,9 +22,9 @@ export const expertiseSchema = z.object({
 
 export const feedbackSchema = z.object({
   satisfaction: z
-    .number({ required_error: 'Please select a satisfaction rating' })
-    .min(1)
-    .max(10),
+    .number()
+    .min(1, 'Please select a satisfaction rating')
+    .max(10, 'Satisfaction rating must be between 1 and 10'),
   topFeatures: z
     .array(z.string())
     .min(1, 'Please select at least one feature'),
