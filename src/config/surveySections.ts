@@ -15,7 +15,7 @@ export const surveySections: SurveySection[] = [
         label: 'Full Name',
         type: 'text',
         placeholder: 'Ahmed Mohamed',
-        required: true,
+        required: false,
         validation: {
           required: 'Full name is required',
           minLength: { value: 3, message: 'Name must be at least 3 characters' },
@@ -26,7 +26,7 @@ export const surveySections: SurveySection[] = [
         label: 'Email Address',
         type: 'email',
         placeholder: 'ahmed@example.com',
-        required: true,
+        required: false,
         validation: {
           required: 'Email is required',
           email: 'Please enter a valid email address',
@@ -47,62 +47,6 @@ export const surveySections: SurveySection[] = [
         },
       },
       {
-        id: 'role',
-        label: 'What is your current role?',
-        type: 'radio',
-        required: true,
-        options: [
-          { label: 'Student', value: 'student' },
-          { label: 'Junior Developer', value: 'junior' },
-          { label: 'Senior Developer', value: 'senior' },
-          { label: 'Team Lead', value: 'lead' },
-          { label: 'Manager', value: 'manager' },
-        ],
-        validation: {
-          required: 'Please select your role',
-        },
-      },
-    ],
-  },
-
-  // القسم الثاني: المهارات والخبرات
-  {
-    id: 'expertise',
-    title: 'Your Expertise',
-    subtitle: 'Tell us about your skills and experience',
-    route: '/survey/expertise',
-    fields: [
-      {
-        id: 'primaryDomain',
-        label: 'Primary Domain',
-        type: 'dropdown',
-        placeholder: 'Select your domain',
-        required: true,
-        options: [
-          { label: 'Web Development', value: 'web' },
-          { label: 'Mobile Development', value: 'mobile' },
-          { label: 'Data Science', value: 'data' },
-          { label: 'DevOps', value: 'devops' },
-          { label: 'UI/UX Design', value: 'design' },
-        ],
-        validation: {
-          required: 'Please select your primary domain',
-        },
-      },
-      {
-        id: 'skills',
-        label: 'Your Skills',
-        type: 'tag-input',
-        placeholder: 'Type a skill and press Enter',
-        required: true,
-        maxTags: 8,
-        helperText: 'Add your key skills (max 8)',
-        validation: {
-          required: 'Please add at least one skill',
-          maxTags: { value: 8, message: 'You can add up to 8 skills only' },
-        },
-      },
-      {
         id: 'experience',
         label: 'Years of Experience',
         type: 'radio',
@@ -116,57 +60,112 @@ export const surveySections: SurveySection[] = [
         validation: {
           required: 'Please select your experience level',
         },
-      },
+      }
     ],
   },
 
+  // القسم الثاني: المهارات والخبرات
+  // {
+  //   id: 'expertise',
+  //   title: 'Your Expertise',
+  //   subtitle: 'Tell us about your skills and experience',
+  //   route: '/survey/expertise',
+  //   fields: [
+  //     {
+  //       id: 'primaryDomain',
+  //       label: 'Primary Domain',
+  //       type: 'dropdown',
+  //       placeholder: 'Select your domain',
+  //       required: true,
+  //       options: [
+  //         { label: 'Web Development', value: 'web' },
+  //         { label: 'Mobile Development', value: 'mobile' },
+  //         { label: 'Data Science', value: 'data' },
+  //         { label: 'DevOps', value: 'devops' },
+  //         { label: 'UI/UX Design', value: 'design' },
+  //       ],
+  //       validation: {
+  //         required: 'Please select your primary domain',
+  //       },
+  //     },
+  //     {
+  //       id: 'skills',
+  //       label: 'Your Skills',
+  //       type: 'tag-input',
+  //       placeholder: 'Type a skill and press Enter',
+  //       required: true,
+  //       maxTags: 8,
+  //       helperText: 'Add your key skills (max 8)',
+  //       validation: {
+  //         required: 'Please add at least one skill',
+  //         maxTags: { value: 8, message: 'You can add up to 8 skills only' },
+  //       },
+  //     },
+  //     {
+  //       id: 'experience',
+  //       label: 'Years of Experience',
+  //       type: 'radio',
+  //       required: true,
+  //       options: [
+  //         { label: '0-1 years', value: 'entry' },
+  //         { label: '2-4 years', value: 'mid' },
+  //         { label: '5-8 years', value: 'senior' },
+  //         { label: '9+ years', value: 'expert' },
+  //       ],
+  //       validation: {
+  //         required: 'Please select your experience level',
+  //       },
+  //     },
+  //   ],
+  // },
+
   // القسم الثالث: التقييم والملاحظات
-  {
-    id: 'feedback',
-    title: 'Feedback',
-    subtitle: 'Help us improve',
-    route: '/survey/feedback',
-    fields: [
-      {
-        id: 'satisfaction',
-        label: 'How satisfied are you?',
-        type: 'rating',
-        required: true,
-        min: 1,
-        max: 10,
-        helperText: '1 = Not satisfied, 10 = Very satisfied',
-        validation: {
-          required: 'Please rate your satisfaction',
-        },
-      },
-      {
-        id: 'features',
-        label: 'What features do you use most?',
-        type: 'checkbox',
-        required: true,
-        options: [
-          { label: 'Analytics Dashboard', value: 'analytics' },
-          { label: 'API Access', value: 'api' },
-          { label: 'Mobile App', value: 'mobile' },
-          { label: 'Reporting Tools', value: 'reports' },
-        ],
-        validation: {
-          required: 'Please select at least one feature',
-        },
-      },
-      {
-        id: 'suggestions',
-        label: 'Any suggestions for improvement?',
-        type: 'textarea',
-        placeholder: 'Share your thoughts...',
-        required: false,
-        helperText: 'Optional - we appreciate your feedback!',
-        validation: {
-          maxLength: { value: 1000, message: 'Suggestion cannot exceed 1000 characters' },
-        },
-      },
-    ],
-  },
+  // {
+  //   id: 'feedback',
+  //   title: 'Feedback',
+  //   subtitle: 'Help us improve',
+  //   route: '/survey/feedback',
+  //   fields: [
+  //     {
+  //       id: 'satisfaction',
+  //       label: 'How satisfied are you?',
+  //       type: 'rating',
+  //       required: true,
+  //       min: 1,
+  //       max: 10,
+  //       helperText: '1 = Not satisfied, 10 = Very satisfied',
+  //       validation: {
+  //         required: 'Please rate your satisfaction',
+  //       },
+  //     },
+  //     {
+  //       id: 'features',
+  //       label: 'What features do you use most?',
+  //       type: 'checkbox',
+  //       required: true,
+  //       options: [
+  //         { label: 'Analytics Dashboard', value: 'analytics' },
+  //         { label: 'API Access', value: 'api' },
+  //         { label: 'Mobile App', value: 'mobile' },
+  //         { label: 'Reporting Tools', value: 'reports' },
+  //       ],
+  //       validation: {
+  //         required: 'Please select at least one feature',
+  //       },
+  //     },
+  //     {
+  //       id: 'suggestions',
+  //       label: 'Any suggestions for improvement?',
+  //       type: 'textarea',
+  //       placeholder: 'Share your thoughts...',
+  //       required: false,
+  //       helperText: 'Optional - we appreciate your feedback!',
+  //       validation: {
+  //         maxLength: { value: 1000, message: 'Suggestion cannot exceed 1000 characters' },
+  //       },
+  //     },
+  //   ],
+  // },
 ];
 
 export const TOTAL_SECTIONS = surveySections.length;

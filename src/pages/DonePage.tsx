@@ -1,10 +1,11 @@
-import { useEffect, useRef } from 'react';
+// pages/DonePage.tsx
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
 import { CheckCircle2, RotateCcw, Mail, MessageSquare } from 'lucide-react';
 import { AnimatedPage } from '../components/common/AnimatedPage';
 import { useSurvey } from '../hooks/useSurvey';
 import { useSurveyStore } from '../store/surveyStore';
+import { useNavigate } from 'react-router-dom';
 
 // Simple confetti burst using canvas
 function ConfettiCanvas() {
@@ -87,37 +88,65 @@ function ConfettiCanvas() {
 export function DonePage() {
   const navigate = useNavigate();
   const { handleReset } = useSurvey();
+  const resetSurvey = useSurveyStore((s) => s.resetSurvey);
   const isSubmitted = useSurveyStore((s) => s.isSubmitted);
-  // const isFullyCompleted = useSurveyStore((state) => state.isFullyCompleted());
-  const { resetSurvey, } = useSurveyStore();
+  const isFullyCompleted = useSurveyStore((state) => state.isFullyCompleted());
+  const [hasCleared, setHasCleared] = useState(false);
 
-
-  // Guard: فقط لو مش submitted نروح للهوم
+  // 🔥 GUARD: منع الدخول لو الفورم مش مكتمل أو مش مرسل
   useEffect(() => {
-    if (!isSubmitted) {
+    // لو الفورم مش مكتمل ومش مرسل، نروح للهوم
+    if (!isFullyCompleted && !isSubmitted) {
       navigate('/');
+      return;
     }
-  }, []);
 
-  // مسح الـ survey بعد ما الصفحة تظهر (مرة واحدة)
+    // لو الفورم مكتمل بس مش مرسل (يعني دخل يدوي)، نروح للـ summary
+    if (isFullyCompleted && !isSubmitted) {
+      navigate('/summary');
+      return;
+    }
+
+    if (isFullyCompleted && isSubmitted) {
+      localStorage.removeItem("survey_state_v1");
+      return;
+    }
+
+
+  }, [isFullyCompleted, isSubmitted, navigate]);
+
+  // منع الرجوع للخلف (يتنفذ بس لو احنا في الصفحة صح)
   useEffect(() => {
-    // منع الرجوع للخلف
+    if (!isSubmitted && !isFullyCompleted) return;
+
     window.history.pushState(null, '', window.location.href);
-    window.onpopstate = () => {
+    const handlePopState = () => {
       window.history.pushState(null, '', window.location.href);
     };
-
-    // مسح الـ survey بعد 200ms عشان نتأكد إن الصفحة اتحملت
-    const timeoutId = setTimeout(() => {
-      resetSurvey();
-    }, 200);
+    window.addEventListener('popstate', handlePopState);
 
     return () => {
-      clearTimeout(timeoutId);
-      window.onpopstate = null;
+      window.removeEventListener('popstate', handlePopState);
     };
-  }, [resetSurvey]);
+  }, [isSubmitted, isFullyCompleted]);
 
+  // مسح الـ survey بعد ما الصفحة تظهر (مرة واحدة فقط)
+  useEffect(() => {
+    // ننضف بس لو احنا في صفحة done صح (يعني الفورم مرسل)
+    if (!hasCleared && isSubmitted) {
+      setHasCleared(true);
+      const timeoutId = setTimeout(() => {
+        resetSurvey();
+      }, 500);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [resetSurvey, hasCleared, isSubmitted]);
+
+  // لو مش مؤهل، منعرضش حاجة (الـ guard هيعمل redirect)
+  if (!isSubmitted && !isFullyCompleted) {
+    return null;
+  }
 
   return (
     <AnimatedPage>

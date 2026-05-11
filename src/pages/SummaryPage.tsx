@@ -1,163 +1,141 @@
-import { motion } from 'framer-motion';
+// pages/SummaryPage.tsx
 import { useNavigate } from 'react-router-dom';
-import { Edit2, Send, ChevronLeft } from 'lucide-react';
-import { AnimatedPage } from '../components/common/AnimatedPage';
+import { motion } from 'framer-motion';
+import { CheckCircle, Edit, Send, Loader2, AlertCircle } from 'lucide-react';
 import { useSurvey } from '../hooks/useSurvey';
 import { surveySections } from '../config/surveySections';
-import { useSurveyStore } from '@/store/surveyStore';
-// import { useSurveyStore } from '../store/surveyStore';
-
-function formatValue(value: unknown): string {
-  if (value === undefined || value === null || value === '') return '—';
-  if (Array.isArray(value)) return value.join(', ') || '—';
-  if (typeof value === 'number') return String(value);
-  return String(value);
-}
-
-function getFieldLabel(sectionIdx: number, fieldId: string): string {
-  const section = surveySections[sectionIdx];
-  const field = section?.fields.find((f) => f.id === fieldId);
-  return field?.label ?? fieldId;
-}
-
-function getReadableValue(sectionIdx: number, fieldId: string, value: unknown): string {
-  const section = surveySections[sectionIdx];
-  const field = section?.fields.find((f) => f.id === fieldId);
-
-  if (!field) return formatValue(value);
-
-  if ((field.type === 'radio' || field.type === 'dropdown') && field.options) {
-    const opt = field.options.find((o) => o.value === value);
-    if (opt) return opt.label;
-  }
-
-  if (field.type === 'checkbox' && field.options && Array.isArray(value)) {
-    const labels = (value as string[]).map(
-      (v) => field.options?.find((o) => o.value === v)?.label ?? v
-    );
-    return labels.join(', ') || '—';
-  }
-
-  return formatValue(value);
-}
 
 export function SummaryPage() {
   const navigate = useNavigate();
-  const { answers, handleSubmit, goToSection } = useSurvey();
-  const isFullyCompleted = useSurveyStore((state) => state.isFullyCompleted());
+  const { 
+    answers, 
+    handleSubmit, 
+    isFullyCompleted, 
+    goToSection,
+    isSubmitting,
+    submitError,
+    isSubmitSuccess 
+  } = useSurvey();
 
-  const handlteFinalSubmit = () => {
-    if (!isFullyCompleted) {
-      console.log("Please fill in all")
-    } else {
-      handleSubmit();
-      navigate('/done');
-    }
+  // Redirect if not completed
+  if (!isFullyCompleted) {
+    navigate('/');
+    return null;
   }
 
   return (
-    <AnimatedPage>
-      <div className="min-h-screen pt-24 pb-12 px-4">
-        <div className="max-w-2xl mx-auto">
-          {/* Header */}
-          <div className="mb-8">
-            <button
-              onClick={() => navigate(-1)}
-              className="flex items-center gap-1.5 text-sm text-[var(--muted)] hover:text-[var(--foreground)] mb-6 transition-colors"
+    <div className="min-h-screen pt-24 pb-20 px-4">
+      <div className="max-w-3xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="glass-card rounded-3xl p-8 sm:p-10"
+        >
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="w-8 h-8 text-white" />
+            </div>
+            <h1 className="text-3xl font-bold text-[var(--foreground)] mb-2">
+              Review Your Answers
+            </h1>
+            <p className="text-[var(--muted)]">
+              Please review your responses before submitting
+            </p>
+          </div>
+
+          {/* 🔥 عرض رسالة الخطأ لو موجودة */}
+          {submitError && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 flex items-center gap-3"
             >
-              <ChevronLeft size={15} />
-              Back to survey
-            </button>
-            <h1 className="text-3xl font-bold text-[var(--foreground)] mb-2">Review Your Answers</h1>
-            <p className="text-[var(--muted)] text-sm">Everything looks correct? Hit submit below.</p>
-          </div>
+              <AlertCircle className="w-5 h-5 text-red-500 shrink-0" />
+              <p className="text-sm text-red-500">{submitError}</p>
+            </motion.div>
+          )}
 
-          {/* Sections */}
-          <div className="flex flex-col gap-6">
-            {surveySections.map((section, sectionIdx) => {
-              // const isCompleted = completedSections.includes(section.id);
-              const sectionAnswers = section.fields
-                .map((f) => ({ ...f, rawValue: answers[f.id] }))
-                .filter((f) => f.rawValue !== undefined && f.rawValue !== '');
+          <div className="space-y-8">
+            {surveySections.map((section, sectionIdx) => (
+              <div key={section.id} className="border-t border-[var(--border)] pt-6 first:border-t-0 first:pt-0">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-semibold text-[var(--foreground)]">
+                    {section.title}
+                  </h2>
+                  <button
+                    onClick={() => goToSection(sectionIdx)}
+                    disabled={isSubmitting}
+                    className="flex items-center gap-1 text-sm text-[var(--primary)] hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Edit size={14} />
+                    Edit
+                  </button>
+                </div>
 
-              return (
-                <motion.div
-                  key={section.id}
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: sectionIdx * 0.1 }}
-                  className="glass-card rounded-2xl overflow-hidden"
-                >
-                  {/* Section header */}
-                  <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)]">
-                    <div>
-                      <h3 className="text-sm font-semibold text-[var(--foreground)]">
-                        {section.title}
-                      </h3>
-                      <p className="text-xs text-[var(--muted)] mt-0.5">{sectionAnswers.length} answers</p>
-                    </div>
-                    <button
-                      onClick={() => {
-                        goToSection(sectionIdx);
-                        navigate(section.route);
-                      }}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
-                        text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-2)]
-                        border border-[var(--border)] transition-all"
-                    >
-                      <Edit2 size={11} />
-                      Edit
-                    </button>
-                  </div>
-
-                  {/* Fields */}
-                  <div className="divide-y divide-[var(--border)]">
-                    {sectionAnswers.length === 0 ? (
-                      <div className="px-6 py-4 text-sm text-[var(--muted)]">
-                        No answers for this section.
+                <div className="space-y-3">
+                  {section.fields.map((field) => {
+                    const value = answers[field.id];
+                    if (!value && !field.required) return null;
+                    
+                    let displayValue = value;
+                    if (Array.isArray(value)) {
+                      displayValue = value.map(v => {
+                        const opt = field.options?.find(o => o.value === v);
+                        return opt?.label || v;
+                      }).join(', ');
+                    } else if (field.options) {
+                      const option = field.options.find(o => o.value === value);
+                      displayValue = option?.label || value;
+                    }
+                    
+                    return (
+                      <div key={field.id} className="flex justify-between items-start py-2">
+                        <span className="text-sm text-[var(--muted)]">{field.label}</span>
+                        <span className="text-sm font-medium text-[var(--foreground)] text-right max-w-[60%] break-words">
+                          {displayValue || '—'}
+                        </span>
                       </div>
-                    ) : (
-                      sectionAnswers.map((field) => (
-                        <div key={field.id} className="px-6 py-3.5 flex items-start justify-between gap-6">
-                          <span className="text-xs font-medium text-[var(--muted)] shrink-0 pt-0.5 w-32">
-                            {getFieldLabel(sectionIdx, field.id)}
-                          </span>
-                          <span className="text-sm text-[var(--foreground)] text-right">
-                            {getReadableValue(sectionIdx, field.id, field.rawValue)}
-                          </span>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </motion.div>
-              );
-            })}
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
-      </div>
 
-      {/* Sticky submit button */}
-      <div
-        className="z-40 px-4 py-4"
-        style={{ background: 'linear-gradient(to top, var(--background), transparent)' }}
-      >
-        <div className="max-w-2xl mx-auto">
-          <motion.button
-            disabled={!isFullyCompleted}
-            onClick={(handlteFinalSubmit)}
-            whileHover={{ scale: 1.02, boxShadow: '0 0 40px var(--primary)/40' }}
-            whileTap={{ scale: 0.98 }}
-            className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl text-base font-semibold text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{
-              background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
-              boxShadow: '0 0 30px var(--primary)/25',
-            }}
-          >
-            <Send size={18} />
-            {isFullyCompleted ? 'Submit Survey' : 'Please complete all sections'}
-          </motion.button>
-        </div>
+          <div className="mt-10 pt-6 border-t border-[var(--border)]">
+            <motion.button
+              whileHover={!isSubmitting ? { scale: 1.02 } : {}}
+              whileTap={!isSubmitting ? { scale: 0.98 } : {}}
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className="w-full flex items-center justify-center gap-2 px-7 py-3 rounded-xl text-sm font-semibold text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
+                boxShadow: '0 0 20px var(--primary)/25',
+              }}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" />
+                  Submitting...
+                </>
+              ) : (
+                <>
+                  <Send size={16} />
+                  Submit Survey
+                </>
+              )}
+            </motion.button>
+            
+            {/* رسالة نجاح قبل التحويل (اختياري) */}
+            {isSubmitSuccess && (
+              <p className="text-center text-green-500 text-sm mt-3">
+                Submission successful! Redirecting...
+              </p>
+            )}
+          </div>
+        </motion.div>
       </div>
-    </AnimatedPage>
+    </div>
   );
 }

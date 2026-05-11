@@ -1,10 +1,11 @@
-import { useCallback, useMemo } from 'react';
+// hooks/useSurvey.ts
+import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSurveyStore } from '../store/surveyStore';
 import { sectionSchemas, surveySections } from '../config/surveySections';
 import type { SurveyAnswers } from '../types/survey';
-// import { sectionSchemas } from '@/schemas/sectionSchemas';
-import { isFormFullyCompleted } from '@/utils/surveyValidation';
+import { isFormFullyCompleted } from '../utils/surveyValidation';
+import { finalSend } from '../services/finalSend.service';
 
 export function useSurvey() {
   const navigate = useNavigate();
@@ -20,6 +21,11 @@ export function useSurvey() {
     startSurvey,
   } = useSurveyStore();
 
+  // State for submission
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isSubmitSuccess, setIsSubmitSuccess] = useState(false);
+
   const currentSection = surveySections[currentSectionIndex];
   const isLastSection = currentSectionIndex === surveySections.length - 1;
 
@@ -32,7 +38,6 @@ export function useSurvey() {
     [navigate, setCurrentSection]
   );
 
-  // useSurvey.ts - جزء completeSection
   const completeSection = useCallback(
     (sectionAnswers: SurveyAnswers) => {
       // الأول نخزن الإجابات
@@ -57,29 +62,54 @@ export function useSurvey() {
         goToSection(currentSectionIndex + 1);
       }
     },
-    [setAnswers, currentSection, isLastSection, navigate]
+    [setAnswers, currentSection, isLastSection, navigate, goToSection, currentSectionIndex, answers, markSectionComplete]
   );
 
   const goBack = useCallback(() => {
     if (currentSectionIndex > 0) {
       goToSection(currentSectionIndex - 1);
     } else {
-      navigate('/');
+      // navigate('/');
     }
   }, [currentSectionIndex, goToSection, navigate]);
 
+
+  // useSurvey.ts - handleSubmit (من غير reset)
   const handleSubmit = useCallback(async () => {
-    // In production this would POST to an API
-    const payload = answers;
-    console.log('Survey Submitted:', payload);
-    submitSurvey();
-    navigate('/done');
-  }, [answers, submitSurvey, navigate]);
+    if (isSubmitting) return;
+
+    if (!isFormFullyCompleted(answers, surveySections.length)) {
+      setSubmitError('Please complete all required fields before submitting');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+    setIsSubmitSuccess(false);
+
+    try {
+      const payload = answers;
+      console.log('Submitting Survey:', payload);
+
+      await finalSend(payload);
+
+      setIsSubmitSuccess(true);
+      submitSurvey(); // Mark as submitted in store
+      navigate('/done');
+
+    } catch (err: any) {
+      console.error('Submission error:', err);
+      setSubmitError(err.message || 'Something went wrong. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [answers, isSubmitting, submitSurvey, navigate]);
+
 
   const handleReset = useCallback(() => {
     resetSurvey();
     startSurvey();
-    navigate('/');
+    // navigate('/');
   }, [resetSurvey, startSurvey, navigate]);
 
   // Use the validation function we created earlier
@@ -88,6 +118,7 @@ export function useSurvey() {
   }, [answers]);
 
   return {
+    // Existing
     currentSection,
     currentSectionIndex,
     isLastSection,
@@ -98,6 +129,11 @@ export function useSurvey() {
     goBack,
     handleSubmit,
     handleReset,
-    isFullyCompleted
+    isFullyCompleted,
+
+    // New submission states
+    isSubmitting,
+    submitError,
+    isSubmitSuccess,
   };
 }
