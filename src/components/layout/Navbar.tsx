@@ -59,7 +59,6 @@ export function Navbar() {
           {/* Desktop nav */}
           <nav className="hidden sm:flex items-center gap-1">
             {navLinks.map((link) => {
-              console.log(link.to)
               const isActive = location.pathname === link.to ||
                 (link.to.includes("survey") && location.pathname.startsWith('/survey'));
               return (

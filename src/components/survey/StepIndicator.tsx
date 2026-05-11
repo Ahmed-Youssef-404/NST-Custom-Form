@@ -25,8 +25,6 @@ export function StepIndicator({ sections, currentIndex, completedIds, onStepClic
         const isCompleted = completedIds.includes(section.id);
         const isCurrent = idx === currentIndex;
         const isClickable = isCompleted && onStepClick;
-
-        console.log(isClickable)
         return (
           <React.Fragment key={section.id}>
             {/* Step circle */}

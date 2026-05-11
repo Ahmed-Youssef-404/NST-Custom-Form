@@ -47,7 +47,6 @@ export function SummaryPage() {
   const isFullyCompleted = useSurveyStore((state) => state.isFullyCompleted());
 
   const handlteFinalSubmit = () => {
-    console.log(isFullyCompleted)
     if (!isFullyCompleted) {
       console.log("Please fill in all")
     } else {

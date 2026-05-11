@@ -17,8 +17,6 @@ export function useAutosave(data: Record<string, unknown>, delay = 2000) {
   const setLastSaved = useSurveyStore((s) => s.setLastSaved);
   const setAnswers = useSurveyStore((s) => s.setAnswers);
 
-  console.log(status)
-
   // Clear all timers
   const clearAllTimers = useCallback(() => {
     if (debounceTimerRef.current) {
