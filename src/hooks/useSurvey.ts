@@ -32,23 +32,32 @@ export function useSurvey() {
     [navigate, setCurrentSection]
   );
 
+  // useSurvey.ts - جزء completeSection
   const completeSection = useCallback(
     (sectionAnswers: SurveyAnswers) => {
+      // الأول نخزن الإجابات
       setAnswers(sectionAnswers);
+
+      // نتأكد من صحة القسم
       const sectionIndex = surveySections.findIndex(s => s.id === currentSection.id);
       const schema = sectionSchemas[sectionIndex];
       const isValid = schema.safeParse(sectionAnswers).success;
 
       if (!isValid) {
-        console.warn('Cannot proceed: missing required fields');
+        console.warn('Cannot proceed: section has missing required fields');
         return;
       }
 
-      markSectionComplete(currentSection.id, sectionAnswers);
-      if (isLastSection) navigate('/summary');
-      else goToSection(currentSectionIndex + 1);
+      // نحدد إن القسم مكتمل
+      markSectionComplete(currentSection.id, { ...answers, ...sectionAnswers });
+
+      if (isLastSection) {
+        navigate('/summary');
+      } else {
+        goToSection(currentSectionIndex + 1);
+      }
     },
-    [setAnswers, markSectionComplete, currentSection, isLastSection, navigate, currentSectionIndex, goToSection]
+    [setAnswers, currentSection, isLastSection, navigate]
   );
 
   const goBack = useCallback(() => {

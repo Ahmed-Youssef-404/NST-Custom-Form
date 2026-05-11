@@ -1,7 +1,8 @@
-// SurveyShell.tsx (النسخة النهائية)
+// SurveyShell.tsx
 import { useEffect, useMemo } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useDebouncedCallback } from 'use-debounce';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, ChevronRight } from 'lucide-react';
 import type { SurveySection } from '../../types/survey';
@@ -21,25 +22,52 @@ interface Props {
 
 export function SurveyShell({ section, onComplete, onBack }: Props) {
   const { currentSectionIndex, completedSections, totalSections, progressPercent } = useProgress();
-  const { answers } = useSurveyStore();
+  const { answers, setAnswers } = useSurveyStore();
 
-  // 🎯 توليد الـ schema تلقائياً من الـ section
   const schema = useMemo(() => generateSectionSchema(section), [section]);
 
   const methods = useForm<any>({
     resolver: zodResolver(schema),
-    defaultValues: answers,
+    // بنخلي القيم الابتدائية هي اللي في الـ store أول ما السيكشن يفتح
+    defaultValues: useMemo(() => {
+      const vals: Record<string, any> = {};
+      section.fields.forEach(f => {
+        vals[f.id] = answers[f.id] ?? '';
+      });
+      return vals;
+    }, [section.id]), // فقط لما السيكشن يتغير
     mode: 'onChange',
   });
 
-  const { handleSubmit, reset, formState: { isValid, isDirty } } = methods;
+  const { handleSubmit, reset, watch, formState: { isValid } } = methods;
 
-  console.log(isValid, isDirty)
+  const debouncedSave = useDebouncedCallback((data: any) => {
+    setAnswers(data);
+  }, 400);
 
-  // Reset form when section changes
+
+  // ✅ التعديل الأول: حفظ البيانات فقط بدون مراقبة الـ answers هنا
   useEffect(() => {
-    reset(answers);
-  }, [section.id, answers, reset]);
+    const subscription = watch((value) => {
+      // بنفلتر القيم عشان ميبقاش فيه undefined
+      const cleanValues = Object.fromEntries(
+        Object.entries(value).filter(([_, v]) => v !== undefined)
+      );
+      debouncedSave(cleanValues);
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, debouncedSave]);
+
+  // ✅ التعديل الثاني: الـ reset يحصل فقط لما الـ section id يتغير
+  useEffect(() => {
+    const sectionValues: Record<string, any> = {};
+    section.fields.forEach(field => {
+      sectionValues[field.id] = answers[field.id] ?? '';
+    });
+    
+    // بنعمل reset عشان لو المستخدم اتنقل بين الأقسام
+    reset(sectionValues, { keepDefaultValues: false });
+  }, [section.id, reset]); // شيلنا answers من هنا تماماً
 
   const onSubmit = (data: any) => {
     onComplete(data as Record<string, unknown>);
@@ -48,21 +76,19 @@ export function SurveyShell({ section, onComplete, onBack }: Props) {
   return (
     <div className="min-h-screen pt-24 pb-20 px-4">
       <div className="max-w-2xl mx-auto">
-        {/* Step indicator - يتغير تلقائياً مع surveySections */}
         <StepIndicator
           sections={surveySections}
           currentIndex={currentSectionIndex}
           completedIds={completedSections}
         />
 
-        {/* Progress bar - نسبة مئوية دقيقة */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs text-[var(--muted)] font-medium">
               Step {currentSectionIndex + 1} of {totalSections}
             </span>
             <div className="flex items-center gap-3">
-              <span className="text-xs text-[var(--muted)] font-medium">{progressPercent}%</span>
+              <span className="text-xs text-[var(--muted)] font-medium">{Math.round(progressPercent)}%</span>
             </div>
           </div>
           <div className="h-1 bg-[var(--border)] rounded-full overflow-hidden">
@@ -76,7 +102,6 @@ export function SurveyShell({ section, onComplete, onBack }: Props) {
           </div>
         </div>
 
-        {/* Form Card */}
         <AnimatedPage key={section.id}>
           <div className="glass-card rounded-3xl p-8 sm:p-10">
             <div className="mb-8">

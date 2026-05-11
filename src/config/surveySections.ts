@@ -3,64 +3,73 @@ import type { SurveySection } from '../types/survey';
 import { generateAllSchemas } from '../utils/surveySchemaGenerator';
 
 export const surveySections: SurveySection[] = [
+  // القسم الأول: معلومات شخصية
   {
     id: 'personal',
     title: 'About You',
-    subtitle: "Let's start with the basics. We keep this private.",
+    subtitle: 'Tell us a bit about yourself',
     route: '/survey/personal',
     fields: [
       {
         id: 'fullName',
         label: 'Full Name',
         type: 'text',
-        placeholder: 'Your full name',
+        placeholder: 'Ahmed Mohamed',
         required: true,
-        helperText: 'As it appears on your profile',
-        minLength: 2,
+        validation: {
+          required: 'Full name is required',
+          minLength: { value: 3, message: 'Name must be at least 3 characters' },
+        },
       },
       {
         id: 'email',
         label: 'Email Address',
         type: 'email',
-        placeholder: 'hello@example.com',
+        placeholder: 'ahmed@example.com',
         required: true,
+        validation: {
+          required: 'Email is required',
+          email: 'Please enter a valid email address',
+        },
       },
       {
         id: 'phone',
         label: 'Phone Number',
         type: 'phone',
-        placeholder: '+1 (555) 000-0000',
-        required: true,
-        minLength: 10,
-      },
-      {
-        id: 'bio',
-        label: 'Short Bio',
-        type: 'textarea',
-        placeholder: 'Tell us a little about yourself...',
+        placeholder: '+20 123 456 7890',
         required: false,
-        helperText: 'A brief description — 2 to 4 sentences.',
-        minLength: 20,
+        helperText: 'Optional - only for urgent contact',
+        validation: {
+          regex: {
+            value: /^[\+\d\s\(\)\-]{10,15}$/,
+            message: 'Enter a valid phone number',
+          },
+        },
       },
       {
         id: 'role',
-        label: 'Your Role',
+        label: 'What is your current role?',
         type: 'radio',
         required: true,
         options: [
-          { label: 'Individual Contributor', value: 'ic' },
+          { label: 'Student', value: 'student' },
+          { label: 'Junior Developer', value: 'junior' },
+          { label: 'Senior Developer', value: 'senior' },
           { label: 'Team Lead', value: 'lead' },
-          { label: 'Manager / Director', value: 'manager' },
-          { label: 'Executive / C-Suite', value: 'executive' },
-          { label: 'Freelancer / Consultant', value: 'freelancer' },
+          { label: 'Manager', value: 'manager' },
         ],
+        validation: {
+          required: 'Please select your role',
+        },
       },
     ],
   },
+
+  // القسم الثاني: المهارات والخبرات
   {
     id: 'expertise',
     title: 'Your Expertise',
-    subtitle: 'Help us understand your skills and experience depth.',
+    subtitle: 'Tell us about your skills and experience',
     route: '/survey/expertise',
     fields: [
       {
@@ -70,111 +79,95 @@ export const surveySections: SurveySection[] = [
         placeholder: 'Select your domain',
         required: true,
         options: [
-          { label: 'Software Engineering', value: 'software' },
-          { label: 'Product Management', value: 'product' },
-          { label: 'Design & UX', value: 'design' },
-          { label: 'Data Science / ML', value: 'data' },
-          { label: 'Marketing', value: 'marketing' },
-          { label: 'Operations', value: 'operations' },
-          { label: 'Finance', value: 'finance' },
-          { label: 'Other', value: 'other' },
+          { label: 'Web Development', value: 'web' },
+          { label: 'Mobile Development', value: 'mobile' },
+          { label: 'Data Science', value: 'data' },
+          { label: 'DevOps', value: 'devops' },
+          { label: 'UI/UX Design', value: 'design' },
         ],
+        validation: {
+          required: 'Please select your primary domain',
+        },
       },
       {
         id: 'skills',
-        label: 'Key Skills',
+        label: 'Your Skills',
         type: 'tag-input',
         placeholder: 'Type a skill and press Enter',
         required: true,
-        maxTags: 10,
-        helperText: 'Add up to 10 skills. Press Enter or comma to add.',
+        maxTags: 8,
+        helperText: 'Add your key skills (max 8)',
+        validation: {
+          required: 'Please add at least one skill',
+          maxTags: { value: 8, message: 'You can add up to 8 skills only' },
+        },
       },
       {
-        id: 'workStyle',
-        label: 'How Do You Prefer to Work?',
-        type: 'checkbox',
-        required: true,
-        options: [
-          { label: 'Remote-first', value: 'remote' },
-          { label: 'In-office', value: 'office' },
-          { label: 'Hybrid model', value: 'hybrid' },
-          { label: 'Async communication', value: 'async' },
-          { label: 'Real-time collaboration', value: 'realtime' },
-          { label: 'Deep focus blocks', value: 'deepwork' },
-        ],
-      },
-      {
-        id: 'experienceYears',
+        id: 'experience',
         label: 'Years of Experience',
         type: 'radio',
         required: true,
         options: [
-          { label: 'Less than 1 year', value: 'lt1' },
-          { label: '1 – 3 years', value: '1to3' },
-          { label: '3 – 7 years', value: '3to7' },
-          { label: '7 – 12 years', value: '7to12' },
-          { label: '12+ years', value: 'gt12' },
+          { label: '0-1 years', value: 'entry' },
+          { label: '2-4 years', value: 'mid' },
+          { label: '5-8 years', value: 'senior' },
+          { label: '9+ years', value: 'expert' },
         ],
+        validation: {
+          required: 'Please select your experience level',
+        },
       },
     ],
   },
+
+  // القسم الثالث: التقييم والملاحظات
   {
     id: 'feedback',
-    title: 'Feedback & Vision',
-    subtitle: 'Your honest perspective shapes what we build next.',
+    title: 'Feedback',
+    subtitle: 'Help us improve',
     route: '/survey/feedback',
     fields: [
       {
         id: 'satisfaction',
-        label: 'Overall Satisfaction',
+        label: 'How satisfied are you?',
         type: 'rating',
         required: true,
         min: 1,
         max: 10,
-        helperText: '1 = Not satisfied at all, 10 = Extremely satisfied',
+        helperText: '1 = Not satisfied, 10 = Very satisfied',
+        validation: {
+          required: 'Please rate your satisfaction',
+        },
       },
       {
-        id: 'topFeatures',
-        label: 'Most Valued Features',
+        id: 'features',
+        label: 'What features do you use most?',
         type: 'checkbox',
         required: true,
         options: [
-          { label: 'Performance & Speed', value: 'performance' },
-          { label: 'Design & Aesthetics', value: 'design' },
-          { label: 'Developer Experience', value: 'dx' },
-          { label: 'Documentation Quality', value: 'docs' },
-          { label: 'Community & Support', value: 'community' },
-          { label: 'Pricing & Value', value: 'pricing' },
+          { label: 'Analytics Dashboard', value: 'analytics' },
+          { label: 'API Access', value: 'api' },
+          { label: 'Mobile App', value: 'mobile' },
+          { label: 'Reporting Tools', value: 'reports' },
         ],
+        validation: {
+          required: 'Please select at least one feature',
+        },
       },
       {
-        id: 'biggestChallenge',
-        label: 'Biggest Challenge You Face',
-        type: 'dropdown',
-        placeholder: 'Select the closest match',
-        required: true,
-        options: [
-          { label: 'Scaling the team', value: 'scaling' },
-          { label: 'Technical debt', value: 'tech_debt' },
-          { label: 'Cross-team alignment', value: 'alignment' },
-          { label: 'Hiring the right talent', value: 'hiring' },
-          { label: 'Shipping fast enough', value: 'velocity' },
-          { label: 'Maintaining quality', value: 'quality' },
-        ],
-      },
-      {
-        id: 'futureIdeas',
-        label: 'Ideas for the Future',
+        id: 'suggestions',
+        label: 'Any suggestions for improvement?',
         type: 'textarea',
-        placeholder: 'Share any ideas, requests, or feedback you have...',
+        placeholder: 'Share your thoughts...',
         required: false,
-        helperText: 'No character limit. Be as detailed as you like.',
+        helperText: 'Optional - we appreciate your feedback!',
+        validation: {
+          maxLength: { value: 1000, message: 'Suggestion cannot exceed 1000 characters' },
+        },
       },
     ],
   },
 ];
 
 export const TOTAL_SECTIONS = surveySections.length;
-
-// Generate Zod schemas automatically from the sections
 export const sectionSchemas = generateAllSchemas(surveySections);
