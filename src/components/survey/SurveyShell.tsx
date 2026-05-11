@@ -7,9 +7,9 @@ import type { ZodSchema } from 'zod';
 import type { SurveySection } from '../../types/survey';
 import { FieldRenderer } from '../fields/FieldRenderer';
 import { StepIndicator } from './StepIndicator';
-import { AutosaveBadge } from '../common/AutosaveBadge';
+// import { AutosaveBadge } from '../common/AutosaveBadge';
 import { AnimatedPage } from '../common/AnimatedPage';
-import { useAutosave } from '../../hooks/useAutosave';
+// import { useAutosave } from '../../hooks/useAutosave';
 import { useProgress } from '../../hooks/useProgress';
 import { useSurveyStore } from '../../store/surveyStore';
 import { surveySections } from '../../config/surveySections';
@@ -33,7 +33,7 @@ export function SurveyShell({ section, schema, onComplete, onBack }: Props) {
     mode: 'onChange',
   });
 
-  const { handleSubmit, watch, reset } = methods;
+  const { handleSubmit, reset } = methods;
 
   // Reset form with persisted answers on mount
   useEffect(() => {
@@ -41,8 +41,8 @@ export function SurveyShell({ section, schema, onComplete, onBack }: Props) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [section.id]);
 
-  const watchedValues = watch();
-  const { status } = useAutosave(watchedValues, 20);
+  // const watchedValues = watch();
+  // const { status } = useAutosave(watchedValues, 20);
 
   // حل مشكلة نوع onSubmit: استخدام any لتجنب خطأ التوافق
   const onSubmit = (data: any) => {
