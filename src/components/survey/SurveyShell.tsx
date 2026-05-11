@@ -34,6 +34,8 @@ export function SurveyShell({ section, onComplete, onBack }: Props) {
 
   const { handleSubmit, reset, formState: { isValid, isDirty } } = methods;
 
+  console.log(isValid, isDirty)
+
   // Reset form when section changes
   useEffect(() => {
     reset(answers);
@@ -115,7 +117,7 @@ export function SurveyShell({ section, onComplete, onBack }: Props) {
                     type="submit"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.97 }}
-                    disabled={!isValid && isDirty}
+                    disabled={!isValid}
                     className="flex items-center gap-2 px-7 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                     style={{
                       background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
