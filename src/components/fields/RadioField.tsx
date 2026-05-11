@@ -43,6 +43,7 @@ export function RadioField({ field }: Props) {
                 initial={{ opacity: 0, x: -8 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.04 }}
+                
                 className={cn(
                   'flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all duration-200',
                   'hover:border-[var(--primary)]/50 hover:bg-[var(--surface-2)]',
@@ -76,7 +77,7 @@ export function RadioField({ field }: Props) {
                   )}
                 </div>
                 <span
-                  onClick={() => handleSelect(option.value)}
+                  // onClick={() => handleSelect(option.value)}
                   className={cn(
                     'text-sm font-medium transition-colors duration-200 cursor-pointer',
                     isSelected ? 'text-[var(--foreground)]' : 'text-[var(--muted)]'
