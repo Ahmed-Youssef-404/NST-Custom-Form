@@ -1,67 +1,137 @@
-import React, { useMemo } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useRef } from 'react';
+
+interface Star {
+  x: number;
+  y: number;
+  size: number;
+  speed: number;
+  opacity: number;
+  opacityDelta: number;
+}
 
 const StarsBackground = () => {
-  // توليد بيانات النجوم مرة واحدة فقط عند تحميل الموقع
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animFrameRef = useRef<number>(0);
+  const starsRef = useRef<Star[]>([]);
 
-  const isSmallScreen = () => window.innerWidth < 768;
-  const starsCount = isSmallScreen() ? 100 : 150;
-  const stars = useMemo(() => {
-    return Array.from({ length: starsCount }).map((_, i) => ({
-      id: i,
-      size: Math.random() * 1.8 + 0.5, // أحجام متنوعة بين 0.5px و 2.3px
-      x: Math.random() * 100, // موقع أفقي عشوائي
-      y: Math.random() * 200, // موقع رأسي عشوائي
-      duration: Math.random() * 15 + 10, // سرعة حركة هادئة (10-25 ثانية) تناسب خلفية الموقع
-      delay: Math.random() * 10,
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isSmall = window.innerWidth < 768;
+    const COUNT = isSmall ? 80 : 140;
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+
+    // Initialize stars
+    starsRef.current = Array.from({ length: COUNT }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      size: Math.random() * 1.4 + 0.4,
+      speed: Math.random() * 0.25 + 0.05,      // slow upward drift
+      opacity: Math.random() * 0.4 + 0.1,
+      opacityDelta: (Math.random() * 0.004 + 0.001) * (Math.random() < 0.5 ? 1 : -1),
     }));
+
+    const drawNebula = () => {
+      // Nebula glow — drawn once per frame but cheap (just 2 radial gradients)
+      const g1 = ctx.createRadialGradient(
+        canvas.width * 0.2, canvas.height * 0.3, 0,
+        canvas.width * 0.2, canvas.height * 0.3, canvas.width * 0.4,
+      );
+      g1.addColorStop(0, 'rgba(59,130,246,0.07)');
+      g1.addColorStop(1, 'transparent');
+
+      const g2 = ctx.createRadialGradient(
+        canvas.width * 0.8, canvas.height * 0.7, 0,
+        canvas.width * 0.8, canvas.height * 0.7, canvas.width * 0.4,
+      );
+      g2.addColorStop(0, 'rgba(167,139,250,0.05)');
+      g2.addColorStop(1, 'transparent');
+
+      ctx.fillStyle = g1;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = g2;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    };
+
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawNebula();
+
+      const stars = starsRef.current;
+
+      for (let i = 0; i < stars.length; i++) {
+        const s = stars[i];
+
+        // Twinkle
+        s.opacity += s.opacityDelta;
+        if (s.opacity > 0.7 || s.opacity < 0.05) s.opacityDelta *= -1;
+
+        // Drift upward
+        if (!prefersReduced) {
+          s.y -= s.speed;
+          if (s.y < -2) {
+            s.y = canvas.height + 2;
+            s.x = Math.random() * canvas.width;
+          }
+        }
+
+        // Draw star (single arc call per star — very fast)
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${s.opacity.toFixed(2)})`;
+        ctx.fill();
+      }
+
+      animFrameRef.current = requestAnimationFrame(draw);
+    };
+
+    draw();
+
+    const onResize = () => {
+      resize();
+      // Redistribute stars on resize
+      starsRef.current.forEach(s => {
+        s.x = Math.random() * canvas.width;
+        s.y = Math.random() * canvas.height;
+      });
+    };
+    window.addEventListener('resize', onResize);
+
+    return () => {
+      cancelAnimationFrame(animFrameRef.current);
+      window.removeEventListener('resize', onResize);
+    };
   }, []);
 
   return (
-    // استخدام fixed inset-0 يضمن أن الخلفية تغطي الشاشة بالكامل وتظل ثابتة أثناء التمرير
-    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-
-      {/* رسم النجوم */}
-      {stars.map((star) => (
-        <motion.div
-          key={star.id}
-          className="absolute bg-white rounded-full"
-          style={{
-            width: `${star.size}px`,
-            height: `${star.size}px`,
-            left: `${star.x}%`,
-            top: `${star.y}%`,
-            // إضافة توهج خفيف جداً لكل نجمة
-            boxShadow: '0 0 2px rgba(255, 255, 255, 0.4)',
-          }}
-          animate={{
-            // الحركة للأعلى لإعطاء إحساس بالعمق والإبحار
-            y: [0, -800],
-            // وميض خفيف عشوائي
-            opacity: [0.1, 0.5, 0.1],
-          }}
-          transition={{
-            duration: star.duration,
-            repeat: Infinity,
-            ease: "linear",
-            delay: star.delay,
-          }}
-        />
-      ))}
-
-      {/* إضافة تأثير "سديم" (Nebula) خفيف جداً في الزوايا لزيادة الجمالية */}
+    <>
+      <canvas
+        ref={canvasRef}
+        className="fixed inset-0 z-0 pointer-events-none"
+        aria-hidden="true"
+      />
+      {/* Nebula static layer — CSS only, zero JS cost */}
       <div
-        className="absolute inset-0 opacity-30"
+        className="fixed inset-0 z-0 pointer-events-none opacity-30"
         style={{
           background: `
-            radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.15) 0%, transparent 40%),
-            radial-gradient(circle at 80% 70%, rgba(167, 139, 250, 0.1) 0%, transparent 40%)
-          `
+            radial-gradient(circle at 20% 30%, rgba(59,130,246,0.15) 0%, transparent 40%),
+            radial-gradient(circle at 80% 70%, rgba(167,139,250,0.1) 0%, transparent 40%)
+          `,
         }}
-      />
-    </div>
+        aria-hidden="true"
+      />    
+    </>
   );
 };
 
-// استخدام React.memo ضروري جداً هنا لمنع إعادة ريندر النجوم مع كل حركة في الموقع
 export default React.memo(StarsBackground);
