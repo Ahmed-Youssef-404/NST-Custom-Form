@@ -66,7 +66,7 @@ const generateStars = (count: number) => {
 
 const isSmallScreen = () => window.innerWidth < 768;
 
-const starsData = generateStars(isSmallScreen() ? 100 : 300);
+const starsData = generateStars(isSmallScreen() ? 40 : 300);
 
 export function HeroSection() {
   const navigate = useNavigate();
