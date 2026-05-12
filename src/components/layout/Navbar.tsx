@@ -1,16 +1,20 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { AstroidIcon, Menu, X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 // import { useProgress } from '@/hooks/useProgress';
 import { surveySections } from '@/config/surveySections';
+import { useSurveyStore } from '@/store/surveyStore';
 
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { startSurvey } = useSurveyStore();
+  
   // const { totalSections, } = useProgress();
 
   const firstSection = surveySections[0].route;
@@ -65,6 +69,15 @@ export function Navbar() {
                 <Link
                   key={link.to}
                   to={link.to}
+                  onClick={() => {
+                    if (link.label === "Form") {
+                      console.log("object")
+                      startSurvey();
+                      if (surveySections?.length > 0) {
+                        navigate(`${surveySections[0].route}`);
+                      }
+                    }
+                  }}
                   className={cn(
                     'px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200',
                     isActive
