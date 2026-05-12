@@ -107,7 +107,7 @@ export const surveySections: SurveySection[] = [
         type: 'textarea',
         required: true,
         validation: {
-          minLength: { value: 10, message: 'Name must be at least 10 characters' },
+          minLength: { value: 1, message: 'This question is required' },
         },
       },
       {
@@ -116,7 +116,7 @@ export const surveySections: SurveySection[] = [
         type: 'textarea',
         required: true,
         validation: {
-          minLength: { value: 10, message: 'Name must be at least 10 characters' },
+          minLength: { value: 1, message: 'This question is required' },
         },
       },
       {
@@ -153,7 +153,7 @@ export const surveySections: SurveySection[] = [
         type: 'textarea',
         required: true,
         validation: {
-          minLength: { value: 10, message: 'Name must be at least 10 characters' },
+          minLength: { value: 1, message: 'This question is required' },
         },
       },
     ],
@@ -172,7 +172,7 @@ export const surveySections: SurveySection[] = [
         type: 'textarea',
         required: true,
         validation: {
-          minLength: { value: 10, message: 'Name must be at least 10 characters' },
+          minLength: { value: 1, message: 'This question is required' },
         },
       },
       {
@@ -181,7 +181,7 @@ export const surveySections: SurveySection[] = [
         type: 'textarea',
         required: true,
         validation: {
-          minLength: { value: 10, message: 'Name must be at least 10 characters' },
+          minLength: { value: 1, message: 'This question is required' },
         },
       },
       {
@@ -190,7 +190,7 @@ export const surveySections: SurveySection[] = [
         type: 'textarea',
         required: true,
         validation: {
-          minLength: { value: 10, message: 'Name must be at least 10 characters' },
+          minLength: { value: 1, message: 'This question is required' },
         },
       },
       {
@@ -199,7 +199,7 @@ export const surveySections: SurveySection[] = [
         type: 'textarea',
         required: true,
         validation: {
-          minLength: { value: 10, message: 'Name must be at least 10 characters' },
+          minLength: { value: 1, message: 'This question is required' },
         },
       },
       {
@@ -208,7 +208,7 @@ export const surveySections: SurveySection[] = [
         type: 'textarea',
         required: true,
         validation: {
-          minLength: { value: 10, message: 'Name must be at least 10 characters' },
+          minLength: { value: 1, message: 'This question is required' },
         },
       },
       {
@@ -217,7 +217,7 @@ export const surveySections: SurveySection[] = [
         type: 'textarea',
         required: true,
         validation: {
-          minLength: { value: 10, message: 'Name must be at least 10 characters' },
+          minLength: { value: 1, message: 'This question is required' },
         },
       },
     ],
