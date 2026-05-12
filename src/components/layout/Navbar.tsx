@@ -17,7 +17,7 @@ export function Navbar() {
 
   const navLinks = [
     { label: 'Home', to: '/' },
-    { label: 'Survey', to: `${firstSection}` },
+    { label: 'Form', to: `${firstSection}` },
     { label: 'Summary', to: '/summary' },
   ];
 
