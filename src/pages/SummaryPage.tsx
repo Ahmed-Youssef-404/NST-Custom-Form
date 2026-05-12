@@ -4,7 +4,8 @@ import { motion } from 'framer-motion';
 import { CheckCircle, Edit, Send, Loader2, AlertCircle } from 'lucide-react';
 import { useSurvey } from '../hooks/useSurvey';
 import { surveySections } from '../config/surveySections';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import { toast } from 'sonner';
 
 export function SummaryPage() {
   const navigate = useNavigate();
@@ -26,9 +27,22 @@ export function SummaryPage() {
   }, [isFullyCompleted, navigate]);
 
   // إذا لم يكتمل الاستبيان، لا تعرض المحتوى
+  const hasShownToast = useRef(false);
+
   if (!isFullyCompleted) {
+    if (!hasShownToast.current) {
+      toast("Complete the Form", { position: "top-center" });
+      hasShownToast.current = true;
+    }
     return null;
   }
+
+  // Reset when condition changes
+  useEffect(() => {
+    if (isFullyCompleted) {
+      hasShownToast.current = false;
+    }
+  }, [isFullyCompleted]);
 
   return (
     <div className="min-h-screen pt-24 pb-20 px-4">
