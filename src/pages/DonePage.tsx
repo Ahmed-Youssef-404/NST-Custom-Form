@@ -15,7 +15,7 @@ const whatsappContacts = [
   },
   {
     id: 2,
-    name: 'Hana',
+    name: 'Hana Mohamed',
     phone: '+201018590852',
     message: 'Hello%20I%20have%20a%20question%20about%20PulseSurvey',
   },
