@@ -38,9 +38,10 @@
 --ring:           rgba(189, 174, 31, 0.3);  /* ذهبي */
 
 /* Rating colors - consistent with warmth */
---rating-low:     #e09d32;  /* ذهبي عسلي بدل الأحمر */
---rating-mid:     #bdae1f;  /* ذهبي زيتوني */
---rating-high:    #c73d23;  /* أحمر تراكوتا */
+--rating-low:     #e03232;  /* ذهبي عسلي بدل الأحمر */
+--rating-mid:     #e07d32;  /* ذهبي زيتوني */
+--reting-good:    #32dde0;  /* أحمر تراكوتا */
+--rating-high:    #23c749;  /* أحمر تراكوتا */
 }
 
 /* ====================================

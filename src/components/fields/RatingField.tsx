@@ -23,13 +23,13 @@ export function RatingField({ field }: Props) {
     if (val <= 3) return 'Low';
     if (val <= 6) return 'Moderate';
     if (val <= 8) return 'Good';
-    return 'Excellent';
+    return 'High';
   };
 
   const getRatingColor = (val: number) => {
     if (val <= 3) return 'var(--rating-low)';
     if (val <= 6) return 'var(--rating-mid)';
-    if (val <= 8) return 'var(--primary)';
+    if (val <= 8) return 'var(--reting-good)';
     return 'var(--rating-high)';
   };
 
