@@ -4,22 +4,29 @@ import { motion } from 'framer-motion';
 import { CheckCircle, Edit, Send, Loader2, AlertCircle } from 'lucide-react';
 import { useSurvey } from '../hooks/useSurvey';
 import { surveySections } from '../config/surveySections';
+import { useEffect } from 'react';
 
 export function SummaryPage() {
   const navigate = useNavigate();
-  const { 
-    answers, 
-    handleSubmit, 
-    isFullyCompleted, 
+  const {
+    answers,
+    handleSubmit,
+    isFullyCompleted,
     goToSection,
     isSubmitting,
     submitError,
-    isSubmitSuccess 
+    isSubmitSuccess
   } = useSurvey();
 
   // Redirect if not completed
+  useEffect(() => {
+    if (!isFullyCompleted) {
+      navigate('/');
+    }
+  }, [isFullyCompleted, navigate]);
+
+  // إذا لم يكتمل الاستبيان، لا تعرض المحتوى
   if (!isFullyCompleted) {
-    navigate('/');
     return null;
   }
 
@@ -76,7 +83,7 @@ export function SummaryPage() {
                   {section.fields.map((field) => {
                     const value = answers[field.id];
                     if (!value && !field.required) return null;
-                    
+
                     let displayValue = value;
                     if (Array.isArray(value)) {
                       displayValue = value.map(v => {
@@ -87,7 +94,7 @@ export function SummaryPage() {
                       const option = field.options.find(o => o.value === value);
                       displayValue = option?.label || value;
                     }
-                    
+
                     return (
                       <div key={field.id} className="flex justify-between items-start py-2">
                         <span className="text-sm text-[var(--muted)]">{field.label}</span>
@@ -107,7 +114,7 @@ export function SummaryPage() {
               whileHover={!isSubmitting ? { scale: 1.02 } : {}}
               whileTap={!isSubmitting ? { scale: 0.98 } : {}}
               onClick={handleSubmit}
-              disabled={isSubmitting}
+              disabled={isSubmitting || !isFullyCompleted}
               className="w-full flex items-center justify-center gap-2 px-7 py-3 rounded-xl text-sm font-semibold text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
@@ -126,7 +133,7 @@ export function SummaryPage() {
                 </>
               )}
             </motion.button>
-            
+
             {/* رسالة نجاح قبل التحويل (اختياري) */}
             {isSubmitSuccess && (
               <p className="text-center text-green-500 text-sm mt-3">
