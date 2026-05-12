@@ -69,7 +69,7 @@ export const surveySections: SurveySection[] = [
         type: 'radio',
         required: true,
         options: [
-          { label: 'preparing', value: "preparing" },
+          { label: 'preparatory', value: "preparatory" },
           { label: '1st', value: "1" },
           { label: '2nd', value: "2" },
           { label: '3rd', value: "3" },
