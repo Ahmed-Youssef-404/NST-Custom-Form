@@ -169,3 +169,10 @@ textarea.field-input {
   background: rgba(139, 92, 246, 0.3);
   color: var(--foreground);
 }
+
+[data-sonner-toast] {
+  background: #9e301c !important;
+  color: #ffffff !important;
+  font-weight: bolder !important;
+  border: 1px solid #360000 !important;
+}
