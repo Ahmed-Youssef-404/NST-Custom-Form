@@ -332,6 +332,35 @@ export const sectionSchemas = generateAllSchemas(surveySections);
 
 
 
+
+//   {
+//   id: 'expertise',
+//   title: 'Your Expertise',
+//   subtitle: 'Tell us about your skills and experience',
+//   route: '/survey/expertise',
+//   fields: [
+//     {
+//       id: 'primaryDomain',
+//       label: 'Primary Domain',
+//       type: 'dropdown',
+//       placeholder: 'Select your domain',
+//       required: true,
+//       options: [
+//         { label: 'Web Development', value: 'web' },
+//         { label: 'Mobile Development', value: 'mobile' },
+//         { label: 'Data Science', value: 'data' },
+//         { label: 'DevOps', value: 'devops' },
+//         { label: 'UI/UX Design', value: 'design' },
+//       ],
+//       validation: {
+//         required: 'Please select your primary domain',
+//       },
+//     },
+//   ],
+// },
+
+
+
 // القسم الثاني: المهارات والخبرات
 // {
 //   id: 'expertise',
