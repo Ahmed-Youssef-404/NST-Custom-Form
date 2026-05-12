@@ -206,7 +206,7 @@ export function DonePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10"
+            className="flex flex-wrap justify-center gap-4 px-4 mb-10"
           >
             {whatsappContacts.map((contact) => (
               <div
