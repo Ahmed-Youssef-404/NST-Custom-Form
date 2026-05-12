@@ -1,10 +1,32 @@
 // pages/DonePage.tsx
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { CheckCircle2, RotateCcw, Mail, MessageSquare } from 'lucide-react';
+import { CheckCircle2, RotateCcw } from 'lucide-react';
 import { AnimatedPage } from '../components/common/AnimatedPage';
 import { useSurveyStore } from '../store/surveyStore';
 import { useNavigate } from 'react-router-dom';
+
+const whatsappContacts = [
+  {
+    id: 1,
+    name: 'Omar Youssef',
+    phone: '+201159169762',
+    message: 'Hello%20I%20have%20a%20question%20about%20PulseSurvey',
+  },
+  {
+    id: 2,
+    name: 'Hana',
+    phone: '+201018590852',
+    message: 'Hello%20I%20have%20a%20question%20about%20PulseSurvey',
+  },
+  {
+    id: 3,
+    name: 'Adel Mohamed',
+    phone: '+201556129378',
+    message: 'Hello%20I%20have%20a%20question%20about%20PulseSurvey',
+  },
+];
+
 
 // Simple confetti burst using canvas
 function ConfettiCanvas() {
@@ -174,8 +196,8 @@ export function DonePage() {
           >
             <h1 className="text-4xl font-black text-[var(--foreground)] mb-3">Thank You!</h1>
             <p className="text-[var(--muted)] leading-relaxed mb-10">
-              Your responses have been submitted successfully. Your insights genuinely help us build better
-              experiences. We appreciate your time.
+              Your responses have been submitted successfully. <br />
+              Thanks for your interest in joining us.
             </p>
           </motion.div>
 
@@ -184,18 +206,29 @@ export function DonePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 }}
-            className="grid grid-cols-2 gap-4 mb-10"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10"
           >
-            <div className="glass-card rounded-2xl p-5 text-left">
-              <Mail size={20} className="mb-3" style={{ color: 'var(--primary)' }} />
-              <div className="text-sm font-semibold text-[var(--foreground)] mb-1">Email us</div>
-              <div className="text-xs text-[var(--muted)]">hello@pulsesurvey.io</div>
-            </div>
-            <div className="glass-card rounded-2xl p-5 text-left">
-              <MessageSquare size={20} className="mb-3" style={{ color: 'var(--secondary)' }} />
-              <div className="text-sm font-semibold text-[var(--foreground)] mb-1">Live chat</div>
-              <div className="text-xs text-[var(--muted)]">Available Mon–Fri</div>
-            </div>
+            {whatsappContacts.map((contact) => (
+              <div
+                key={contact.id}
+                onClick={() =>
+                  window.open(
+                    `https://wa.me/${contact.phone}`,
+                    '_blank'
+                  )
+                }
+                className="glass-card rounded-2xl p-5 text-left cursor-pointer hover:scale-105 transition-transform"
+              >
+                {/* <MessageCircleCheckIcon size={20} className="mb-3" style={{ color: '#25D366' }} /> */}
+                <img src="/whatsapp.svg" alt="whatsapp" width={30} className="mb-3" />
+                <div className="text-sm font-semibold text-[var(--foreground)] mb-1">
+                  {contact.name}
+                </div>
+                <div className="text-xs text-[var(--muted)]">
+                  {contact.phone.replace(/^(\d{3})(\d{3})(\d{4})$/, '+$1 $2 $3')}
+                </div>
+              </div>
+            ))}
           </motion.div>
 
           {/* Restart - هنا بس اللي نستخدم handleReset عشان يحول للـ home */}
