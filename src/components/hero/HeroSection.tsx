@@ -64,7 +64,9 @@ const generateStars = (count: number) => {
   }));
 };
 
-const starsData = generateStars(350);
+const isSmallScreen = () => window.innerWidth < 768;
+
+const starsData = generateStars(isSmallScreen() ? 100 : 300);
 
 export function HeroSection() {
   const navigate = useNavigate();

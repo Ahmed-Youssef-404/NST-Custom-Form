@@ -3,8 +3,11 @@ import { motion } from 'framer-motion';
 
 const StarsBackground = () => {
   // توليد بيانات النجوم مرة واحدة فقط عند تحميل الموقع
+
+  const isSmallScreen = () => window.innerWidth < 768;
+  const starsCount = isSmallScreen() ? 100 : 150;
   const stars = useMemo(() => {
-    return Array.from({ length: 250 }).map((_, i) => ({
+    return Array.from({ length: starsCount }).map((_, i) => ({
       id: i,
       size: Math.random() * 1.8 + 0.5, // أحجام متنوعة بين 0.5px و 2.3px
       x: Math.random() * 100, // موقع أفقي عشوائي
@@ -17,7 +20,7 @@ const StarsBackground = () => {
   return (
     // استخدام fixed inset-0 يضمن أن الخلفية تغطي الشاشة بالكامل وتظل ثابتة أثناء التمرير
     <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-      
+
       {/* رسم النجوم */}
       {stars.map((star) => (
         <motion.div
@@ -33,7 +36,7 @@ const StarsBackground = () => {
           }}
           animate={{
             // الحركة للأعلى لإعطاء إحساس بالعمق والإبحار
-            y: [0, -800], 
+            y: [0, -800],
             // وميض خفيف عشوائي
             opacity: [0.1, 0.5, 0.1],
           }}
@@ -47,7 +50,7 @@ const StarsBackground = () => {
       ))}
 
       {/* إضافة تأثير "سديم" (Nebula) خفيف جداً في الزوايا لزيادة الجمالية */}
-      <div 
+      <div
         className="absolute inset-0 opacity-30"
         style={{
           background: `
