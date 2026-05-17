@@ -39,7 +39,7 @@ export function HomePage() {
             >
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-[var(--foreground)]">
-                  Unfinished survey
+                  Unfinished Form
                 </p>
 
                 <p className="text-xs text-[var(--muted)] mt-0.5 truncate">

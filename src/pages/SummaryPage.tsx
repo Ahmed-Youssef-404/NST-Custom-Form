@@ -143,7 +143,7 @@ export function SummaryPage() {
               ) : (
                 <>
                   <Send size={16} />
-                  Submit Survey
+                  Submit Form
                 </>
               )}
             </motion.button>

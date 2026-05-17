@@ -242,7 +242,7 @@ export function DonePage() {
               hover:border-[var(--primary)]/40 hover:bg-[var(--surface-2)] transition-all"
           >
             <RotateCcw size={14} />
-            Take the survey again
+            Fill the form again
           </motion.button>
         </div>
       </div>
