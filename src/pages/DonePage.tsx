@@ -197,6 +197,7 @@ export function DonePage() {
             <h1 className="text-4xl font-black text-[var(--foreground)] mb-3">Thank You!</h1>
             <p className="text-[var(--muted)] leading-relaxed mb-10">
               Your responses have been submitted successfully. <br />
+              <strong>We will Contact you after application period ends. </strong> <br />
               Thanks for your interest in joining us.
             </p>
           </motion.div>
